@@ -1,0 +1,22 @@
+from __future__ import annotations
+
+from enum import StrEnum
+
+INTERVENTION_V1 = "intervention_v1"
+
+
+class TwinInterventionType(StrEnum):
+    REVISION_SPRINT = "REVISION_SPRINT"
+    WEAKNESS_REMEDIATION = "WEAKNESS_REMEDIATION"
+    COVERAGE_RECOVERY = "COVERAGE_RECOVERY"
+    CAPACITY_INCREASE = "CAPACITY_INCREASE"
+    CAPACITY_REDUCTION = "CAPACITY_REDUCTION"
+    MOCK_TEST = "MOCK_TEST"
+    MAINTAIN_COURSE = "MAINTAIN_COURSE"
+
+
+class InterventionUrgency(StrEnum):
+    CRITICAL = "CRITICAL"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"

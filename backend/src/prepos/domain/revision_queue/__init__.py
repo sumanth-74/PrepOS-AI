@@ -1,0 +1,1 @@
+"""Revision queue projection domain."""
