@@ -20,6 +20,7 @@ async def test_health_endpoints(client: AsyncClient) -> None:
     assert body["status"] == "ok"
     assert body["checks"]["api"] == "ok"
     assert body["checks"]["database"] == "ok"
+    assert body["checks"]["redis"] == "ok"
 
 
 @pytest.mark.asyncio

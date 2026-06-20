@@ -13,3 +13,10 @@ export function formatLabel(value: string | null | undefined): string {
   if (!value) return "—";
   return value.replaceAll("_", " ");
 }
+
+/** Human-friendly reference without exposing full UUIDs. */
+export function formatShortRef(value: string | null | undefined, prefix = "Ref"): string {
+  if (!value) return "—";
+  const compact = value.replace(/-/g, "");
+  return `${prefix} ·${compact.slice(-6).toUpperCase()}`;
+}

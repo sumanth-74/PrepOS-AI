@@ -31,6 +31,7 @@ dependencies = [
     "sentry-sdk[fastapi,celery,sqlalchemy]>=2.19.0",
     "python-multipart>=0.0.18",
     "structlog>=24.4.0",
+    "pgvector>=0.3.6",
 ]
 
 [project.optional-dependencies]
@@ -74,7 +75,7 @@ mypy_path = "src"
 packages = ["prepos", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["testcontainers.*", "celery.*", "kombu.*"]
+module = ["testcontainers.*", "celery.*", "kombu.*", "pgvector.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

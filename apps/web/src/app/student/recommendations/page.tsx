@@ -1,12 +1,15 @@
 "use client";
 
+import { ConceptLabel } from "@/components/ui/concept-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useStudentContext } from "@/hooks/use-student-context";
 import { useRecommendations } from "@/hooks/use-student-queries";
 import { formatLabel, formatScore } from "@/lib/utils/format";
 
 export default function RecommendationsPage() {
+  const { examId } = useStudentContext();
   const recommendationsQuery = useRecommendations();
 
   return (
@@ -28,9 +31,7 @@ export default function RecommendationsPage() {
               <article key={`${item.concept_id}-${item.recommendation_type}`} className="card">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-base font-semibold text-slate-900">
-                      {formatLabel(item.concept_id)}
-                    </h2>
+                    <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
                     <p className="mt-1 text-sm text-slate-600">
                       {formatLabel(item.recommendation_type)}
                     </p>

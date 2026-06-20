@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 import { use } from "react";
+import { ConceptLabel } from "@/components/ui/concept-label";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useStudentProfile, useStudentDisplayName } from "@/hooks/use-student-lookup";
 import {
   useRecommendations,
   useTwin,
   useTwinDashboard,
 } from "@/hooks/use-student-queries";
 import { formatLabel, formatPercent, formatScore } from "@/lib/utils/format";
+import type { TwinRecommendationResponse } from "@/lib/types/api";
 
 export default function MentorStudentPage({
   params,
@@ -19,6 +22,9 @@ export default function MentorStudentPage({
   params: Promise<{ studentId: string }>;
 }) {
   const { studentId } = use(params);
+  const profileQuery = useStudentProfile(studentId);
+  const studentName = useStudentDisplayName(studentId, profileQuery.data?.target_exam);
+  const examId = profileQuery.data?.target_exam ?? null;
   const dashboardQuery = useTwinDashboard(studentId);
   const twinQuery = useTwin(studentId);
   const recommendationsQuery = useRecommendations(studentId);
@@ -27,11 +33,22 @@ export default function MentorStudentPage({
     <>
       <PageHeader
         title="Student Twin"
-        description={`Twin view for student ${studentId}`}
+        description={studentName}
         actions={
-          <Link href="/mentor/queue" className="btn-secondary">
-            Back to queue
-          </Link>
+          <div className="flex gap-2">
+            <Link href={`/mentor/students/${studentId}/planning`} className="btn-secondary">
+              Planning
+            </Link>
+            <Link href={`/mentor/students/${studentId}/forecasting`} className="btn-secondary">
+              Forecasting
+            </Link>
+            <Link href={`/mentor/students/${studentId}/interventions`} className="btn-secondary">
+              Interventions
+            </Link>
+            <Link href="/mentor/queue" className="btn-secondary">
+              Back to queue
+            </Link>
+          </div>
         }
       />
 
@@ -76,33 +93,38 @@ export default function MentorStudentPage({
           emptyTitle="No recommendations"
           isEmpty={(data) => data.length === 0}
         >
-          {(items) => (
-            <section className="card">
-              <h2 className="text-sm font-semibold text-slate-900">Recommendations</h2>
-              <ul className="mt-3 space-y-3">
-                {items.slice(0, 8).map((item) => (
-                  <li
-                    key={`${item.concept_id}-${item.recommendation_type}`}
-                    className="rounded-lg border border-slate-100 p-3"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-medium text-slate-900">
-                        {formatLabel(item.concept_id)}
-                      </p>
-                      <StatusBadge
-                        label={formatScore(item.recommendation_score)}
-                        tone="info"
-                      />
-                    </div>
-                    <p className="mt-1 text-sm text-slate-600">{item.explanation}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          {(items) => <MentorRecommendations examId={examId} items={items} />}
         </QueryBoundary>
       </div>
     </>
+  );
+}
+
+function MentorRecommendations({
+  examId,
+  items,
+}: {
+  examId: string | null;
+  items: TwinRecommendationResponse[];
+}) {
+  return (
+    <section className="card">
+      <h2 className="text-sm font-semibold text-slate-900">Recommendations</h2>
+      <ul className="mt-3 space-y-3">
+        {items.slice(0, 8).map((item) => (
+          <li
+            key={`${item.concept_id}-${item.recommendation_type}`}
+            className="rounded-lg border border-slate-100 p-3"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
+              <StatusBadge label={formatScore(item.recommendation_score)} tone="info" />
+            </div>
+            <p className="mt-1 text-sm text-slate-600">{item.explanation}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

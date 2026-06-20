@@ -17,6 +17,7 @@ celery_app.conf.update(
     task_routes={
         "prepos.tasks.event_tasks.*": {"queue": "events"},
         "prepos.tasks.outbox_tasks.*": {"queue": "default"},
+        "prepos.tasks.knowledge_tasks.*": {"queue": "knowledge"},
     },
     beat_schedule={
         "publish-outbox-events": {

@@ -7,7 +7,14 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   tenantSlug: string | null;
-  setTokens: (accessToken: string, refreshToken: string, tenantSlug: string) => void;
+  tokenExpiresAt: number | null;
+  setTokens: (
+    accessToken: string,
+    refreshToken: string,
+    tenantSlug: string,
+    expiresInSeconds?: number,
+  ) => void;
+  setTenantSlug: (tenantSlug: string) => void;
   clear: () => void;
 }
 
@@ -17,9 +24,25 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       tenantSlug: null,
-      setTokens: (accessToken, refreshToken, tenantSlug) =>
-        set({ accessToken, refreshToken, tenantSlug }),
-      clear: () => set({ accessToken: null, refreshToken: null, tenantSlug: null }),
+      tokenExpiresAt: null,
+      setTokens: (accessToken, refreshToken, tenantSlug, expiresInSeconds) =>
+        set({
+          accessToken,
+          refreshToken,
+          tenantSlug,
+          tokenExpiresAt:
+            expiresInSeconds !== undefined
+              ? Date.now() + expiresInSeconds * 1000
+              : null,
+        }),
+      setTenantSlug: (tenantSlug) => set({ tenantSlug }),
+      clear: () =>
+        set({
+          accessToken: null,
+          refreshToken: null,
+          tenantSlug: null,
+          tokenExpiresAt: null,
+        }),
     }),
     { name: "prepos-auth" },
   ),

@@ -1,6 +1,7 @@
 "use client";
 
 import { KpiCard } from "@/components/ui/kpi-card";
+import { KpiSkeletonGrid } from "@/components/ui/loading-skeleton";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -18,9 +19,11 @@ export default function StudentDashboardPage() {
       />
       <QueryBoundary
         query={dashboardQuery}
+        loadingFallback={<KpiSkeletonGrid count={4} />}
         loadingLabel="Loading dashboard..."
         emptyTitle="No dashboard data yet"
-        emptyDescription="Complete onboarding and study activities to populate your twin."
+        emptyDescription="Complete onboarding and log study activities to populate your twin."
+        emptyAction={{ label: "Log activity", href: "/student/activities" }}
       >
         {(data) => (
           <div className="space-y-6">

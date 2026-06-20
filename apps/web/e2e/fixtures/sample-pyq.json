@@ -1,0 +1,21 @@
+[
+  {
+    "year": 2023,
+    "exam_stage": "prelims",
+    "paper": "GS2",
+    "question_text": "With reference to federalism, which of the following statements is correct regarding President's Rule?",
+    "answer_text": "Article 356 allows President's Rule in states.",
+    "source_reference": "UPSC CSE 2023 GS2",
+    "difficulty": 3,
+    "importance": "high",
+    "concept_ids": ["polity_federalism", "polity_article_356"]
+  },
+  {
+    "year": 2021,
+    "exam_stage": "prelims",
+    "paper": "GS2",
+    "question_text": "The basic structure doctrine was established in which landmark case?",
+    "answer_text": "Kesavananda Bharati v. State of Kerala",
+    "concept_ids": ["polity_basic_structure"]
+  }
+]

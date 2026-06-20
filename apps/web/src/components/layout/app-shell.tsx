@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { useAuth } from "@/providers/auth-provider";
 import { useUiStore } from "@/stores";
 
@@ -15,7 +17,15 @@ interface AppShellProps {
   children: React.ReactNode;
 }
 
+function isActiveNav(pathname: string, href: string): boolean {
+  if (href === "/student/dashboard" || href === "/mentor/dashboard") {
+    return pathname === href;
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function AppShell({ title, navItems, children }: AppShellProps) {
+  const pathname = usePathname();
   const { user, logout } = useAuth();
   const sidebarOpen = useUiStore((state) => state.sidebarOpen);
   const setSidebarOpen = useUiStore((state) => state.setSidebarOpen);
@@ -31,16 +41,24 @@ export function AppShell({ title, navItems, children }: AppShellProps) {
           <p className="text-lg font-semibold text-brand-700">PrepOS</p>
           <p className="text-xs text-slate-500">{title}</p>
         </div>
-        <nav className="space-y-1 p-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="space-y-1 p-3" aria-label="Main navigation">
+          {navItems.map((item) => {
+            const active = isActiveNav(pathname, item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`block rounded-lg px-3 py-2 text-sm font-medium ${
+                  active
+                    ? "bg-brand-50 text-brand-800"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
 

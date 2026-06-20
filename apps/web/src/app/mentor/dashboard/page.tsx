@@ -1,6 +1,7 @@
 "use client";
 
 import { KpiCard } from "@/components/ui/kpi-card";
+import { KpiSkeletonGrid } from "@/components/ui/loading-skeleton";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { useMentorDashboard } from "@/hooks/use-mentor-queries";
@@ -17,8 +18,10 @@ export default function MentorDashboardPage() {
       />
       <QueryBoundary
         query={dashboardQuery}
+        loadingFallback={<KpiSkeletonGrid count={4} />}
         loadingLabel="Loading mentor dashboard..."
         emptyTitle="No mentor dashboard data"
+        emptyDescription="Cases and effectiveness metrics appear once students enter the mentor queue."
       >
         {(data) => (
           <div className="space-y-6">
@@ -44,15 +47,9 @@ export default function MentorDashboardPage() {
               <p className="text-lg font-medium text-brand-700">
                 {formatLabel(data.best_action)}
               </p>
-              <div className="grid gap-3 sm:grid-cols-2 text-sm text-slate-700">
-                <p>
-                  Best action effectiveness:{" "}
-                  {formatScore(data.best_action_effectiveness)}
-                </p>
-                <p>
-                  Average action effectiveness:{" "}
-                  {formatScore(data.average_action_effectiveness)}
-                </p>
+              <div className="grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+                <p>Best action effectiveness: {formatScore(data.best_action_effectiveness)}</p>
+                <p>Average action effectiveness: {formatScore(data.average_action_effectiveness)}</p>
               </div>
             </section>
           </div>

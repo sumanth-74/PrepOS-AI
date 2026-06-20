@@ -1,6 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "@/providers/auth-provider";
@@ -15,11 +18,14 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const tenantSlug = useAuthStore((state) => state.tenantSlug);
+  const registered = searchParams.get("registered") === "1";
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
     setError,
   } = useForm<LoginFormValues>({
@@ -30,6 +36,17 @@ export function LoginForm() {
       password: "",
     },
   });
+
+  useEffect(() => {
+    const tenant = searchParams.get("tenant");
+    const email = searchParams.get("email");
+    if (tenant) {
+      setValue("tenant_slug", tenant);
+    }
+    if (email) {
+      setValue("email", email);
+    }
+  }, [searchParams, setValue]);
 
   const onSubmit = handleSubmit(async (values) => {
     try {
@@ -49,6 +66,12 @@ export function LoginForm() {
           Use your institute credentials to access the student or mentor portal.
         </p>
       </div>
+
+      {registered ? (
+        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800" role="status">
+          Institute account created. Sign in with your new credentials.
+        </p>
+      ) : null}
 
       <div>
         <label className="label" htmlFor="tenant_slug">
@@ -94,6 +117,13 @@ export function LoginForm() {
       <button type="submit" className="btn-primary w-full" disabled={isSubmitting}>
         {isSubmitting ? "Signing in..." : "Sign in"}
       </button>
+
+      <p className="text-center text-sm text-slate-600">
+        Need a new institute?{" "}
+        <Link href="/register" className="font-medium text-brand-700 hover:underline">
+          Register
+        </Link>
+      </p>
     </form>
   );
 }

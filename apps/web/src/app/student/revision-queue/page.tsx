@@ -1,12 +1,15 @@
 "use client";
 
+import { ConceptLabel } from "@/components/ui/concept-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useStudentContext } from "@/hooks/use-student-context";
 import { useRevisionQueue } from "@/hooks/use-student-queries";
 import { formatLabel, formatScore } from "@/lib/utils/format";
 
 export default function RevisionQueuePage() {
+  const { examId } = useStudentContext();
   const queueQuery = useRevisionQueue();
 
   return (
@@ -19,7 +22,8 @@ export default function RevisionQueuePage() {
         query={queueQuery}
         loadingLabel="Loading revision queue..."
         emptyTitle="Revision queue is empty"
-        emptyDescription="You're caught up on revisions."
+        emptyDescription="You're caught up on revisions. Log new revision sessions to keep your graph current."
+        emptyAction={{ label: "Log revision", href: "/student/activities" }}
         isEmpty={(data) => data.length === 0}
       >
         {(items) => (
@@ -37,7 +41,9 @@ export default function RevisionQueuePage() {
               <tbody>
                 {items.map((item) => (
                   <tr key={item.concept_id} className="border-b border-slate-100">
-                    <td className="px-4 py-3 font-medium">{item.concept_id}</td>
+                    <td className="px-4 py-3">
+                      <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
+                    </td>
                     <td className="px-4 py-3">{item.next_review_at}</td>
                     <td className="px-4 py-3">{formatScore(item.retention_score)}</td>
                     <td className="px-4 py-3">{formatScore(item.priority_score)}</td>

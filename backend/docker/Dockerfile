@@ -27,6 +27,7 @@ COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY alembic ./alembic
 COPY alembic.ini .
+COPY scripts ./scripts
 COPY src ./src
 
 RUN useradd --create-home --shell /bin/bash prepos

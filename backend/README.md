@@ -55,6 +55,17 @@ cd backend
 pytest
 ```
 
+## Demo seed (Sprint I1.2)
+
+```bash
+cd backend
+source .venv/bin/activate
+python scripts/seed_demo_data.py
+python scripts/i12_e2e_validation.py   # full report → docs/I1_2_E2E_VALIDATION_REPORT.md
+```
+
+Demo tenant `prepos-demo` — student `student@prepos-demo.example.com`, faculty `faculty@prepos-demo.example.com`, password `SecurePass123!`.
+
 ## Architecture
 
 See `docs/IMPLEMENTATION_GENERATION_MASTER_PROMPT.md`.

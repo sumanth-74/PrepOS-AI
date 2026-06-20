@@ -1,15 +1,18 @@
 "use client";
 
+import { ConceptLabel } from "@/components/ui/concept-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useStudentContext } from "@/hooks/use-student-context";
 import { useStudyPlan, useStudyPlanMutations } from "@/hooks/use-student-queries";
 import { formatLabel, formatScore } from "@/lib/utils/format";
 import type { DailyPlanItem, WeeklyPlanItem } from "@/lib/types/api";
 
 export default function StudyPlanPage() {
+  const { examId } = useStudentContext();
   const planQuery = useStudyPlan();
-  const { completeMutation, skipMutation, examId } = useStudyPlanMutations();
+  const { completeMutation, skipMutation } = useStudyPlanMutations();
 
   const handleComplete = (item: DailyPlanItem) => {
     if (!examId) return;
@@ -62,6 +65,7 @@ export default function StudyPlanPage() {
                     <DailyItemCard
                       key={`${item.concept_id}-${item.activity_type}`}
                       item={item}
+                      examId={examId}
                       onComplete={() => handleComplete(item)}
                       onSkip={() => handleSkip(item)}
                       busy={
@@ -83,6 +87,7 @@ export default function StudyPlanPage() {
                     <WeeklyItemCard
                       key={item.concept_id}
                       item={item}
+                      examId={examId}
                     />
                   ))}
                 </div>
@@ -97,11 +102,13 @@ export default function StudyPlanPage() {
 
 function DailyItemCard({
   item,
+  examId,
   onComplete,
   onSkip,
   busy,
 }: {
   item: DailyPlanItem;
+  examId: string | null;
   onComplete: () => void;
   onSkip: () => void;
   busy: boolean;
@@ -109,7 +116,7 @@ function DailyItemCard({
   return (
     <article className="card flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">{item.concept_id}</h3>
+        <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
         <p className="text-sm text-slate-600">
           {formatLabel(item.activity_type)} · {item.estimated_minutes} min
         </p>
@@ -139,11 +146,17 @@ function DailyItemCard({
   );
 }
 
-function WeeklyItemCard({ item }: { item: WeeklyPlanItem }) {
+function WeeklyItemCard({
+  item,
+  examId,
+}: {
+  item: WeeklyPlanItem;
+  examId: string | null;
+}) {
   return (
     <article className="card">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">{item.concept_id}</h3>
+        <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
         <StatusBadge label={`${item.target_sessions} sessions`} />
       </div>
       <p className="mt-2 text-sm text-slate-600">

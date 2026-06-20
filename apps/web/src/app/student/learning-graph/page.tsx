@@ -1,8 +1,10 @@
 "use client";
 
+import { ConceptLabel } from "@/components/ui/concept-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useStudentContext } from "@/hooks/use-student-context";
 import {
   useLearningGraph,
   useReadiness,
@@ -11,6 +13,7 @@ import {
 import { formatLabel, formatPercent, formatScore } from "@/lib/utils/format";
 
 export default function LearningGraphPage() {
+  const { examId } = useStudentContext();
   const graphQuery = useLearningGraph();
   const readinessQuery = useReadiness();
   const dashboardQuery = useTwinDashboard();
@@ -63,9 +66,7 @@ export default function LearningGraphPage() {
             {graph.nodes.map((node) => (
               <article key={node.concept_id} className="card space-y-2">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-slate-900">
-                    {node.concept_id}
-                  </h3>
+                  <ConceptLabel conceptId={node.concept_id} examId={examId} showPath />
                   <StatusBadge label={formatLabel(node.node_state)} />
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">

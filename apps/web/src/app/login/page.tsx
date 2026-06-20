@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoginForm } from "@/components/auth/login-form";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -34,7 +34,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-10">
-      <LoginForm />
+      <Suspense fallback={<LoadingState label="Loading sign in..." />}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }

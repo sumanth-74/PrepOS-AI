@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Repair local DB migration drift and apply pending Alembic revisions.
+# Repair local DB migration drift, enable pgvector, and apply pending Alembic revisions.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT/backend"
+cd "$ROOT"
 source .venv/bin/activate
 
 python <<'PY'
@@ -24,5 +24,6 @@ asyncio.run(main())
 print("Ensured alembic_version.version_num supports long revision ids.")
 PY
 
+python scripts/ensure_pgvector.py
 alembic upgrade head
 echo "Database is at: $(alembic current | tail -1)"

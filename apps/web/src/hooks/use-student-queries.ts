@@ -2,6 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { studentApi } from "@/lib/api";
+import { ApiError } from "@/lib/api/errors";
+import { toastError, toastSuccess } from "@/lib/toast";
 import type { GoalUpsertRequest, StudyPlanExecutionRequest } from "@/lib/types/api";
 import { useStudentContext } from "@/hooks/use-student-context";
 
@@ -99,11 +101,13 @@ export function useStudyPlanMutations(studentId?: string) {
       });
       return { previous };
     },
-    onError: (_error, _body, context) => {
+    onError: (error, _body, context) => {
       if (context?.previous) {
         queryClient.setQueryData(queryKey, context.previous);
       }
+      toastError(error instanceof ApiError ? error.message : "Failed to complete plan item");
     },
+    onSuccess: () => toastSuccess("Plan item completed"),
     onSettled: invalidate,
   });
 
@@ -131,11 +135,13 @@ export function useStudyPlanMutations(studentId?: string) {
       });
       return { previous };
     },
-    onError: (_error, _body, context) => {
+    onError: (error, _body, context) => {
       if (context?.previous) {
         queryClient.setQueryData(queryKey, context.previous);
       }
+      toastError(error instanceof ApiError ? error.message : "Failed to skip plan item");
     },
+    onSuccess: () => toastSuccess("Plan item skipped"),
     onSettled: invalidate,
   });
 
@@ -159,7 +165,13 @@ export function useGoalMutations(studentId?: string) {
   const createMutation = useMutation({
     mutationFn: (body: GoalUpsertRequest) =>
       studentApi.createGoal(token!, body, studentId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toastSuccess("Goal created");
+    },
+    onError: (error) => {
+      toastError(error instanceof ApiError ? error.message : "Failed to create goal");
+    },
   });
 
   const updateMutation = useMutation({
@@ -168,6 +180,10 @@ export function useGoalMutations(studentId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: ["twin", "dashboard"] });
+      toastSuccess("Goal updated");
+    },
+    onError: (error) => {
+      toastError(error instanceof ApiError ? error.message : "Failed to update goal");
     },
   });
 

@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:17-alpine
+    image: pgvector/pgvector:pg17
     environment:
       POSTGRES_USER: prepos
       POSTGRES_PASSWORD: prepos
@@ -9,6 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U prepos -d prepos"]
       interval: 5s
@@ -44,7 +45,8 @@ services:
       redis:
         condition: service_healthy
     command: >
-      sh -c "alembic upgrade head &&
+      sh -c "python scripts/ensure_pgvector.py &&
+             alembic upgrade head &&
              uvicorn prepos.api.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ./backend/src:/app/src:ro
@@ -66,7 +68,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: celery -A prepos.tasks.celery_app worker --loglevel=info -Q default,events
+    command: celery -A prepos.tasks.celery_app worker --loglevel=info -Q default,events,knowledge
     volumes:
       - ./backend/src:/app/src:ro
 

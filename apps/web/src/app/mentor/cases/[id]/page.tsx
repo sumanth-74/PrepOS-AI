@@ -9,15 +9,18 @@ import { ErrorState } from "@/components/ui/error-state";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useExamName } from "@/hooks/use-exam-lookup";
 import { useMentorCase, useMentorCaseMutations } from "@/hooks/use-mentor-queries";
-import { formatLabel } from "@/lib/utils/format";
+import { useStudentDisplayName, useStudentProfile } from "@/hooks/use-student-lookup";
+import { CASE_RESOLUTION_REASONS } from "@/lib/types/api";
+import { formatLabel, formatShortRef } from "@/lib/utils/format";
 
 const noteSchema = z.object({
   note: z.string().min(1, "Note is required"),
 });
 
 const resolveSchema = z.object({
-  resolution_reason: z.string().min(1, "Resolution reason is required"),
+  resolution_reason: z.enum(CASE_RESOLUTION_REASONS),
 });
 
 type NoteFormValues = z.infer<typeof noteSchema>;
@@ -40,7 +43,7 @@ export default function MentorCasePage({
 
   const resolveForm = useForm<ResolveFormValues>({
     resolver: zodResolver(resolveSchema),
-    defaultValues: { resolution_reason: "" },
+    defaultValues: { resolution_reason: "STUDENT_CONTACTED" },
   });
 
   if (caseQuery.isLoading) {
@@ -55,19 +58,7 @@ export default function MentorCasePage({
 
   return (
     <>
-      <PageHeader
-        title={`Case ${mentorCase.case_id}`}
-        description={`Student ${mentorCase.student_id}`}
-        actions={
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => router.push(`/mentor/student/${mentorCase.student_id}`)}
-          >
-            View student twin
-          </button>
-        }
-      />
+      <CaseHeader mentorCase={mentorCase} />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <InfoCard label="Status" value={formatLabel(mentorCase.status)} />
@@ -85,14 +76,9 @@ export default function MentorCasePage({
           })}
         >
           <h2 className="text-sm font-semibold text-slate-900">Add note</h2>
-          <textarea
-            className="input min-h-28"
-            {...noteForm.register("note")}
-          />
+          <textarea className="input min-h-28" {...noteForm.register("note")} />
           {noteForm.formState.errors.note ? (
-            <p className="text-xs text-red-600">
-              {noteForm.formState.errors.note.message}
-            </p>
+            <p className="text-xs text-red-600">{noteForm.formState.errors.note.message}</p>
           ) : null}
           <button type="submit" className="btn-primary" disabled={noteMutation.isPending}>
             {noteMutation.isPending ? "Saving..." : "Add note"}
@@ -107,10 +93,16 @@ export default function MentorCasePage({
           })}
         >
           <h2 className="text-sm font-semibold text-slate-900">Resolve case</h2>
-          <textarea
-            className="input min-h-28"
-            {...resolveForm.register("resolution_reason")}
-          />
+          <label className="label" htmlFor="resolution_reason">
+            Resolution reason
+          </label>
+          <select id="resolution_reason" className="input" {...resolveForm.register("resolution_reason")}>
+            {CASE_RESOLUTION_REASONS.map((reason) => (
+              <option key={reason} value={reason}>
+                {formatLabel(reason)}
+              </option>
+            ))}
+          </select>
           {resolveForm.formState.errors.resolution_reason ? (
             <p className="text-xs text-red-600">
               {resolveForm.formState.errors.resolution_reason.message}
@@ -131,7 +123,7 @@ export default function MentorCasePage({
             {mentorCase.notes.map((note) => (
               <li key={note.note_id} className="rounded-lg bg-slate-50 p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <StatusBadge label={note.mentor_id} />
+                  <StatusBadge label={formatShortRef(note.mentor_id, "Mentor")} />
                   <span className="text-xs text-slate-500">{note.created_at}</span>
                 </div>
                 <p className="mt-2 text-sm text-slate-700">{note.note}</p>
@@ -141,6 +133,40 @@ export default function MentorCasePage({
         )}
       </section>
     </>
+  );
+}
+
+function CaseHeader({
+  mentorCase,
+}: {
+  mentorCase: {
+    case_id: string;
+    student_id: string;
+    exam_id: string;
+  };
+}) {
+  const router = useRouter();
+  const studentProfileQuery = useStudentProfile(mentorCase.student_id);
+  const examName = useExamName(mentorCase.exam_id);
+  const studentName = useStudentDisplayName(
+    mentorCase.student_id,
+    studentProfileQuery.data?.target_exam,
+  );
+
+  return (
+    <PageHeader
+      title={`Case · ${formatShortRef(mentorCase.case_id, "Case")}`}
+      description={`${studentName} · ${examName}`}
+      actions={
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={() => router.push(`/mentor/student/${mentorCase.student_id}`)}
+        >
+          View student twin
+        </button>
+      }
+    />
   );
 }
 

@@ -1,7 +1,16 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 from logging.config import fileConfig
+from pathlib import Path
+
+# Allow `alembic upgrade head` from backend/ without a prior editable install,
+# as long as dependencies are available in the active interpreter.
+_BACKEND_ROOT = Path(__file__).resolve().parents[1]
+_SRC_ROOT = _BACKEND_ROOT / "src"
+if str(_SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SRC_ROOT))
 
 from alembic import context
 from sqlalchemy import pool

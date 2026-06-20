@@ -1,13 +1,16 @@
 "use client";
 
+import { ConceptLabel } from "@/components/ui/concept-label";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useStudentContext } from "@/hooks/use-student-context";
 import { useRecommendations, useTwin, useTwinDashboard } from "@/hooks/use-student-queries";
 import { formatLabel, formatPercent, formatScore } from "@/lib/utils/format";
 
 export default function ForecastPage() {
+  const { examId } = useStudentContext();
   const dashboardQuery = useTwinDashboard();
   const twinQuery = useTwin();
   const recommendationsQuery = useRecommendations();
@@ -116,8 +119,8 @@ export default function ForecastPage() {
               <ul className="mt-3 space-y-3 text-sm text-slate-700">
                 {items.slice(0, 5).map((item) => (
                   <li key={`${item.concept_id}-${item.recommendation_type}`}>
-                    <p className="font-medium">{formatLabel(item.concept_id)}</p>
-                    <p>{item.explanation}</p>
+                    <ConceptLabel conceptId={item.concept_id} examId={examId} />
+                    <p className="mt-1">{item.explanation}</p>
                   </li>
                 ))}
               </ul>

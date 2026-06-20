@@ -1,0 +1,502 @@
+[
+  {
+    "query": "Explain the basic structure doctrine",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is judicial review under the Indian Constitution?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Describe the powers of the Election Commission of India",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What are fundamental duties under Article 51A?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Explain the doctrine of separation of powers in India",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is the role of the Finance Commission?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Describe cooperative federalism with examples",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is the difference between DPSP and fundamental rights?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Explain the amendment procedure under Article 368",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is the significance of the Kesavananda Bharati case?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Describe the composition and functions of Rajya Sabha",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What are the emergency provisions in the Constitution?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Explain the concept of judicial activism",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is the role of the Comptroller and Auditor General?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Describe the parliamentary privileges in India",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is the difference between cabinet and council of ministers?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Explain the anti-defection law",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is the doctrine of promissory estoppel in administrative law?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Describe the powers of the President of India",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "What is the significance of the Panchayati Raj system?",
+    "exam_id": "upsc_cse",
+    "category": "Polity"
+  },
+  {
+    "query": "Explain fiscal deficit and its implications",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "What is the role of RBI in monetary policy?",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Describe GST and its structure in India",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "What is the difference between CPI and WPI?",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Explain the concept of inclusive growth",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "What are the functions of NITI Aayog?",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Describe the balance of payments crisis of 1991",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "What is quantitative easing?",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Explain the FRBM Act objectives",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "What is the significance of MSME sector in India?",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Describe the concept of jobless growth",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "What is the difference between FDI and FPI?",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Explain the role of SEBI in capital markets",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "What is the Phillips curve?",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Describe the green revolution and its impact",
+    "exam_id": "upsc_cse",
+    "category": "Economy"
+  },
+  {
+    "query": "Explain the causes of the Revolt of 1857",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "What was the significance of the Non-Cooperation Movement?",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Describe the features of the Indus Valley Civilization",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "What were the main provisions of the Government of India Act 1935?",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Explain the role of Subhas Chandra Bose in freedom struggle",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "What is the significance of the Battle of Plassey?",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Describe the Bhakti movement in medieval India",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "What were the outcomes of the Third Battle of Panipat?",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Explain the partition of Bengal and its consequences",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "What is the importance of the Champaran Satyagraha?",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Describe the Mauryan administration",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "What were the causes of the decline of the Mughal Empire?",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Explain the Quit India Movement",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "What is the significance of the Dandi March?",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Describe the architectural features of Vijayanagara empire",
+    "exam_id": "upsc_cse",
+    "category": "History"
+  },
+  {
+    "query": "Explain the monsoon mechanism in India",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "What are the types of soils found in India?",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Describe the Western Ghats and their ecological significance",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "What is the difference between weather and climate?",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Explain the concept of watershed management",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "What are the major river systems of India?",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Describe the causes of earthquakes in the Himalayan region",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "What is El Nino and its impact on Indian monsoon?",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Explain the distribution of rainfall in India",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "What are the characteristics of black soil?",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Describe the coral reef ecosystems in India",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "What is the significance of the Indian Ocean dipole?",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Explain urban heat island effect",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "What are the major mineral resources of India?",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Describe the physiographic divisions of India",
+    "exam_id": "upsc_cse",
+    "category": "Geography"
+  },
+  {
+    "query": "Explain climate change and the greenhouse effect",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "What is biodiversity and why is it important?",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Describe the National Action Plan on Climate Change",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "What are the provisions of the Wildlife Protection Act?",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Explain eutrophication and its effects",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "What is the difference between renewable and non-renewable energy?",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Describe the concept of carbon footprint",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "What are the objectives of the Paris Agreement?",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Explain biomagnification with examples",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "What is the role of wetlands in ecology?",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Describe the impact of plastic pollution on oceans",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "What is environmental impact assessment?",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Explain the concept of sustainable development",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "What are the causes of ozone layer depletion?",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Describe the Chipko movement and its legacy",
+    "exam_id": "upsc_cse",
+    "category": "Environment"
+  },
+  {
+    "query": "Explain recent PIB updates on government schemes",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "What are the key highlights of the latest Union Budget?",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "Describe recent PRS legislative summaries on important bills",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "What is the economic survey outlook for growth?",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "Explain recent government scheme launches for farmers",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "What are recent climate policy announcements in India?",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "Describe recent diplomatic developments in India's neighborhood",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "What are recent digital governance initiatives?",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "Explain recent health sector policy updates",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "What are recent infrastructure project announcements?",
+    "exam_id": "upsc_cse",
+    "category": "Current Affairs"
+  },
+  {
+    "query": "Show previous year questions on federalism",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "Has Article 356 appeared in UPSC before?",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "What are important PYQ themes for Parliament?",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "Show PYQs on monetary policy",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "Which concepts appear frequently in UPSC economy PYQs?",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "Show previous year questions on climate change",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "What PYQ themes are common in Indian polity?",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "Show PYQs on fundamental rights",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "Which geography topics repeat in UPSC PYQs?",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  },
+  {
+    "query": "Show important PYQ themes for environment",
+    "exam_id": "upsc_cse",
+    "category": "PYQ"
+  }
+]
