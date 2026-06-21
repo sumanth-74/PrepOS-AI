@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { CoachingMemoryDashboard } from "@/components/admin/coaching-memory-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminMemoryPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Coaching memory"
           description="Structured, auditable coaching memory for student and mentor copilot continuity."
@@ -28,7 +26,6 @@ export default function AdminMemoryPage() {
           }
         />
         <CoachingMemoryDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

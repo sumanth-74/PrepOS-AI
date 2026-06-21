@@ -59,16 +59,16 @@ export function LoginForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className="card mx-auto w-full max-w-md space-y-4">
+    <form onSubmit={onSubmit} className="card-elevated relative mx-auto w-full max-w-md space-y-5 backdrop-blur-xl">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Sign in to PrepOS</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Use your institute credentials to access the student or mentor portal.
+        <h2 className="text-heading-sm text-foreground">Welcome back</h2>
+        <p className="mt-1 text-sm text-foreground-muted">
+          Sign in to continue your preparation journey.
         </p>
       </div>
 
       {registered ? (
-        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800" role="status">
+        <p className="rounded-xl bg-growth-50 px-3 py-2 text-sm text-growth-800 dark:bg-growth-950/40 dark:text-growth-300" role="status">
           Institute account created. Sign in with your new credentials.
         </p>
       ) : null}
@@ -120,7 +120,7 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-slate-600">
         Need a new institute?{" "}
-        <Link href="/register" className="font-medium text-brand-700 hover:underline">
+        <Link href="/register" className="font-semibold text-growth-600 hover:underline">
           Register
         </Link>
       </p>

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { adminCurrentAffairsApi } from "@/lib/api";
@@ -21,8 +20,7 @@ export default function AdminCurrentAffairsDetailPage() {
   });
 
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Current affairs article"
           description="Article metadata, indexing progress, and concept mapping."
@@ -61,7 +59,6 @@ export default function AdminCurrentAffairsDetailPage() {
         ) : (
           <p className="text-sm text-red-700">Unable to load article.</p>
         )}
-      </div>
-    </RoleGuard>
+    </>
   );
 }

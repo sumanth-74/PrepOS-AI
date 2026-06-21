@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { OnboardingGuard } from "@/components/auth/onboarding-guard";
 import { RoleGuard } from "@/components/auth/role-guard";
 import { StudentShell } from "@/components/layout/student-nav";
+import { WorkerStatusBanner } from "@/components/ui/worker-status-banner";
 
 export default function StudentLayout({
   children,
@@ -17,10 +18,13 @@ export default function StudentLayout({
   return (
     <RoleGuard allowed={["student"]}>
       {isOnboarding ? (
-        <div className="min-h-screen bg-slate-50 p-4 sm:p-6">{children}</div>
+        <div className="min-h-screen bg-surface bg-gradient-mesh p-4 sm:p-6">{children}</div>
       ) : (
         <OnboardingGuard>
-          <StudentShell>{children}</StudentShell>
+          <StudentShell>
+            <WorkerStatusBanner />
+            {children}
+          </StudentShell>
         </OnboardingGuard>
       )}
     </RoleGuard>

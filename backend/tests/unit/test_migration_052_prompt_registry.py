@@ -43,13 +43,13 @@ def test_migration_052_models_have_expected_columns() -> None:
     assert version_columns >= {"prompt_id", "version", "content", "rollout_pct"}
 
 
-def test_prompt_registry_migration_is_head() -> None:
+def test_prompt_registry_migration_chain() -> None:
     from alembic.config import Config
     from alembic.script import ScriptDirectory
 
     config = Config("alembic.ini")
     script = ScriptDirectory.from_config(config)
-    assert script.get_current_head() == "052_prompt_registry"
+    assert "052_prompt_registry" in [rev.revision for rev in script.walk_revisions()]
     revision = script.get_revision("052_prompt_registry")
     assert revision is not None
     assert revision.down_revision == "051_agent_experiments"

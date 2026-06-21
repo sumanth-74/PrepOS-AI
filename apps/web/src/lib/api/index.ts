@@ -384,6 +384,15 @@ export const copilotApi = {
       body,
       ...withToken(token),
     }),
+  feedback: (
+    token: string,
+    body: { trace_id: string; execution_id: string; rating: string; feedback_text?: string },
+  ) =>
+    apiRequest<{ feedback_id: string; status: string }>("/copilot/feedback", {
+      ...withToken(token),
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
 };
 
 export const adminCopilotApi = {
@@ -691,22 +700,118 @@ export const adminAgentHealthApi = {
     }),
 };
 
+export const recommendationsApi = {
+  student: (token: string, examId?: string, limit = 10) =>
+    apiRequest<import("@/lib/types/api").RecommendationsResponse>("/recommendations/student", {
+      method: "POST",
+      body: { exam_id: examId, limit },
+      ...withToken(token),
+    }),
+  mentor: (token: string, studentId: string, examId?: string, limit = 10) =>
+    apiRequest<import("@/lib/types/api").RecommendationsResponse>("/recommendations/mentor", {
+      method: "POST",
+      body: { student_id: studentId, exam_id: examId, limit },
+      ...withToken(token),
+    }),
+  explain: (token: string, conceptId: string, examId?: string) =>
+    apiRequest<import("@/lib/types/api").RecommendationExplainResponse>(
+      `/recommendations/explain/${conceptId}`,
+      {
+        ...withToken(token),
+        query: examId ? { exam_id: examId } : undefined,
+      },
+    ),
+  complete: (token: string, conceptId: string) =>
+    apiRequest<import("@/lib/types/api").CompleteRecommendationResponse>(
+      `/recommendations/${conceptId}/complete`,
+      { method: "POST", ...withToken(token) },
+    ),
+  effectiveness: (token: string, periodDays = 30) =>
+    apiRequest<import("@/lib/types/api").RecommendationEffectivenessResponse>(
+      "/recommendations/effectiveness",
+      { ...withToken(token), query: { period_days: periodDays } },
+    ),
+  outcomes: (token: string, limit = 20) =>
+    apiRequest<import("@/lib/types/api").RecommendationOutcomeListResponse>(
+      "/recommendations/outcomes",
+      { ...withToken(token), query: { limit } },
+    ),
+};
+
 export const adminApprovalsApi = {
   list: (token: string, status = "pending") =>
     apiRequest<import("@/lib/types/api").PendingActionListResponse>("/admin/approvals", {
       ...withToken(token),
       query: { status },
     }),
+  approve: (token: string, actionId: string) =>
+    apiRequest<import("@/lib/types/api").PendingActionItem>(
+      `/admin/approvals/${actionId}/approve`,
+      { method: "POST", ...withToken(token) },
+    ),
+  reject: (token: string, actionId: string) =>
+    apiRequest<import("@/lib/types/api").PendingActionItem>(
+      `/admin/approvals/${actionId}/reject`,
+      { method: "POST", ...withToken(token) },
+    ),
 };
 
-export const copilotApi = {
-  feedback: (
-    token: string,
-    body: { trace_id: string; execution_id: string; rating: string; feedback_text?: string },
-  ) =>
-    apiRequest<{ feedback_id: string; status: string }>("/copilot/feedback", {
+export const adminAgentEvaluationApi = {
+  dashboard: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/agent-evaluation", { ...withToken(token) }),
+};
+
+export const adminSecurityApi = {
+  dashboard: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/security", { ...withToken(token) }),
+  tenantAudits: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/security/tenant-audit", { ...withToken(token) }),
+  runTenantAudit: (token: string, scope = "full") =>
+    apiRequest<Record<string, unknown>>("/admin/security/tenant-audit/run", {
       ...withToken(token),
       method: "POST",
-      body: JSON.stringify(body),
+      body: JSON.stringify({ scope }),
+    }),
+  knowledgeSecurity: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/security/knowledge", { ...withToken(token) }),
+  rateLimits: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/security/rate-limits", { ...withToken(token) }),
+};
+
+export const adminPlatformApi = {
+  jobs: (token: string) => apiRequest<Record<string, unknown>>("/admin/jobs", { ...withToken(token) }),
+  evaluations: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/evaluations", { ...withToken(token) }),
+  forecastAccuracy: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/forecast-accuracy", { ...withToken(token) }),
+  recommendationValidation: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/recommendation-validation", { ...withToken(token) }),
+  monitoring: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/monitoring", { ...withToken(token) }),
+  disasterRecovery: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/disaster-recovery", { ...withToken(token) }),
+  adoption: (token: string) => apiRequest<Record<string, unknown>>("/admin/adoption", { ...withToken(token) }),
+  outcomes: (token: string) => apiRequest<Record<string, unknown>>("/admin/outcomes", { ...withToken(token) }),
+  platformReadiness: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/platform-readiness", { ...withToken(token) }),
+  computeReadiness: (token: string) =>
+    apiRequest<Record<string, unknown>>("/admin/platform-readiness/compute", {
+      ...withToken(token),
+      method: "POST",
+    }),
+};
+
+export const facultyApi = {
+  workspace: (token: string, examId = "upsc_cse") =>
+    apiRequest<Record<string, unknown>>("/faculty/workspace", {
+      ...withToken(token),
+      query: { exam_id: examId },
+    }),
+};
+
+export const studentTimelineApi = {
+  get: (token: string) =>
+    apiRequest<{ events: Array<Record<string, unknown>>; total: number }>("/memory/student/timeline", {
+      ...withToken(token),
     }),
 };

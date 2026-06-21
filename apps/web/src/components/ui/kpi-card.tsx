@@ -1,3 +1,5 @@
+import { MetricCard } from "@/components/design-system/card";
+
 interface KpiCardProps {
   label: string;
   value: string;
@@ -5,21 +7,27 @@ interface KpiCardProps {
   tone?: "default" | "success" | "warning" | "danger";
 }
 
-const toneClasses: Record<NonNullable<KpiCardProps["tone"]>, string> = {
-  default: "text-slate-900",
-  success: "text-emerald-700",
-  warning: "text-amber-700",
-  danger: "text-red-700",
+const toneHint: Record<NonNullable<KpiCardProps["tone"]>, string | undefined> = {
+  default: undefined,
+  success: "↑ Positive trend",
+  warning: "Needs attention",
+  danger: "Critical",
 };
 
 export function KpiCard({ label, value, hint, tone = "default" }: KpiCardProps) {
+  const trend =
+    tone === "success"
+      ? { value: toneHint.success!, positive: true }
+      : tone === "warning" || tone === "danger"
+        ? { value: toneHint[tone]!, positive: false }
+        : undefined;
+
   return (
-    <div className="card">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-        {label}
-      </p>
-      <p className={`mt-2 text-2xl font-semibold ${toneClasses[tone]}`}>{value}</p>
-      {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
-    </div>
+    <MetricCard
+      label={label}
+      value={value}
+      hint={hint}
+      trend={trend}
+    />
   );
 }

@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { RecommendationAnalyticsDashboard } from "@/components/admin/recommendation-analytics-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminRecommendationsPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Recommendation analytics"
           description="Track recommendation acceptance, completion, readiness gains, and concept effectiveness."
@@ -34,7 +32,6 @@ export default function AdminRecommendationsPage() {
           }
         />
         <RecommendationAnalyticsDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

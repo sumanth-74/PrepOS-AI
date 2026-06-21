@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { CohortIntelligenceDashboard } from "@/components/admin/cohort-intelligence-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminCohortPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Cohort intelligence"
           description="Institution health, segment distribution, risk areas, trends, and mentor comparison."
@@ -28,7 +26,6 @@ export default function AdminCohortPage() {
           }
         />
         <CohortIntelligenceDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

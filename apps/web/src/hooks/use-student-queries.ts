@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { studentApi } from "@/lib/api";
+import { studentApi, recommendationsApi } from "@/lib/api";
 import { ApiError } from "@/lib/api/errors";
 import { toastError, toastSuccess } from "@/lib/toast";
 import type { GoalUpsertRequest, StudyPlanExecutionRequest } from "@/lib/types/api";
@@ -25,12 +25,18 @@ export function useTwin(studentId?: string) {
   });
 }
 
-export function useRecommendations(studentId?: string) {
-  const { token } = useStudentContext();
+export function useRecommendations(studentId?: string, examIdOverride?: string | null) {
+  const { token, examId: contextExamId } = useStudentContext();
+  const examId = examIdOverride ?? contextExamId;
   return useQuery({
-    queryKey: ["twin", "recommendations", studentId ?? "self"],
-    queryFn: () => studentApi.recommendations(token!, studentId),
-    enabled: Boolean(token),
+    queryKey: ["recommendations", "engine", studentId ?? "self", examId],
+    queryFn: async () => {
+      const response = studentId
+        ? await recommendationsApi.mentor(token!, studentId, examId ?? undefined)
+        : await recommendationsApi.student(token!, examId ?? undefined);
+      return response.recommendations;
+    },
+    enabled: Boolean(token && (studentId ? examId : true)),
   });
 }
 

@@ -23,6 +23,7 @@ import {
   isStudentRole,
   normalizeRoles,
 } from "@/lib/auth/roles";
+import { clearSessionCookies, syncSessionCookies } from "@/lib/auth/session-cookie";
 import type { AppRole, LoginRequest, UserResponse } from "@/lib/types/api";
 import { useAuthStore } from "@/stores";
 
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             const me = await authApi.me(newToken);
             setUser(me);
+            syncSessionCookies(normalizeRoles(me.roles));
             return;
           } catch {
             // Fall through to clear session.
@@ -72,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (error instanceof ApiError && error.isUnauthorized) {
         clear();
+        clearSessionCookies();
         setUser(null);
       }
     } finally {
@@ -82,6 +85,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     void refreshUser();
   }, [refreshUser]);
+
+  useEffect(() => {
+    if (user) {
+      syncSessionCookies(normalizeRoles(user.roles));
+    }
+  }, [user]);
 
   const login = useCallback(
     async (payload: LoginRequest) => {
@@ -96,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const me = await authApi.me(tokens.access_token);
       setUser(me);
       const roles = normalizeRoles(me.roles);
+      syncSessionCookies(roles);
       router.replace(defaultPortalPath(roles));
     },
     [router, setTokens],
@@ -110,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     clear();
+    clearSessionCookies();
     setUser(null);
     router.replace("/login");
   }, [accessToken, refreshToken, clear, router]);

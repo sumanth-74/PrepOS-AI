@@ -10,6 +10,7 @@ class KnowledgeSourceStatus(StrEnum):
     FAILED = "failed"
     QUARANTINED = "quarantined"
     ARCHIVED = "archived"
+    SECURITY_REVIEW_REQUIRED = "security_review_required"
 
 
 class KnowledgeSourceType(StrEnum):

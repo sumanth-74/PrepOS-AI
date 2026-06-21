@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { mentorApi } from "@/lib/api";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastMutationError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/stores";
 
 export function useMentorInterventionQueue(limit = 20) {
@@ -39,7 +39,7 @@ export function useMentorInterventionMutations(studentId: string, examId?: strin
       void queryClient.invalidateQueries({ queryKey });
       void queryClient.invalidateQueries({ queryKey: queueKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   const executeMutation = useMutation({
@@ -48,7 +48,7 @@ export function useMentorInterventionMutations(studentId: string, examId?: strin
       toastSuccess("Intervention started");
       void queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   const completeMutation = useMutation({
@@ -58,7 +58,7 @@ export function useMentorInterventionMutations(studentId: string, examId?: strin
       void queryClient.invalidateQueries({ queryKey });
       void queryClient.invalidateQueries({ queryKey: queueKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   return { generateMutation, executeMutation, completeMutation };

@@ -14,6 +14,12 @@ test.describe("Authentication", () => {
     await expect(page.getByRole("heading", { name: "Mentor Dashboard" })).toBeVisible();
   });
 
+  test("admin login reaches admin dashboard", async ({ page }) => {
+    await loginAs(page, e2eConfig.adminEmail);
+    await expect(page).toHaveURL(/\/admin$/);
+    await expect(page.getByRole("heading", { name: "Admin dashboard" })).toBeVisible();
+  });
+
   test("invalid credentials show error", async ({ page }) => {
     await page.goto("/login");
     await page.locator("#tenant_slug").fill(e2eConfig.tenant);

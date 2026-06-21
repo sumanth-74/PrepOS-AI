@@ -118,9 +118,9 @@ export default function ForecastPage() {
               <h2 className="text-sm font-semibold text-slate-900">Top forecast actions</h2>
               <ul className="mt-3 space-y-3 text-sm text-slate-700">
                 {items.slice(0, 5).map((item) => (
-                  <li key={`${item.concept_id}-${item.recommendation_type}`}>
+                  <li key={item.concept_id}>
                     <ConceptLabel conceptId={item.concept_id} examId={examId} />
-                    <p className="mt-1">{item.explanation}</p>
+                    <p className="mt-1">{item.reasons[0] ?? item.concept_name}</p>
                   </li>
                 ))}
               </ul>

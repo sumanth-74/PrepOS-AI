@@ -18,6 +18,16 @@ export interface CopilotRecommendation {
   reasons?: string[];
   estimated_readiness_gain: number;
   confidence: string;
+  explanation?: string | null;
+}
+
+export interface CopilotCard {
+  card_type: string;
+  title: string;
+  summary: string;
+  explanation?: string | null;
+  data?: Record<string, unknown>;
+  expanded?: boolean;
 }
 
 export interface CopilotQueryRequest {
@@ -35,9 +45,13 @@ export interface CopilotQueryResponse {
   sources: CopilotSource[];
   citations?: CopilotCitation[];
   recommendations?: CopilotRecommendation[];
+  cards?: CopilotCard[];
   confidence?: string | null;
   student_context_used?: boolean | null;
   session_id?: string | null;
+  trace_id?: string | null;
+  execution_id?: string | null;
+  explanation?: string | null;
 }
 
 export interface CopilotMessage {
@@ -48,8 +62,10 @@ export interface CopilotMessage {
   sources?: CopilotSource[];
   citations?: CopilotCitation[];
   recommendations?: CopilotRecommendation[];
+  cards?: CopilotCard[];
   confidence?: string | null;
   studentContextUsed?: boolean | null;
+  explanation?: string | null;
 }
 
 export interface RecommendationAnalyticsResponse {

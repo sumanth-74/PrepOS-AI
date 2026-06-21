@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
@@ -148,8 +147,8 @@ export function PyqOperationsDashboard() {
               <select className="input w-full" value={examId} onChange={(e) => setExamId(e.target.value)} required>
                 <option value="">Select exam</option>
                 {activeExams.map((exam) => (
-                  <option key={exam.id} value={exam.id}>
-                    {exam.name}
+                  <option key={exam.exam_id} value={exam.exam_id}>
+                    {exam.exam_name}
                   </option>
                 ))}
               </select>

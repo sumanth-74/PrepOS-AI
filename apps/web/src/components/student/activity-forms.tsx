@@ -13,23 +13,23 @@ import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 
 const studySessionSchema = z.object({
-  concept_id: z.string().uuid("Select a concept"),
+  concept_id: z.string().min(1, "Select a concept"),
   engaged_minutes: z.coerce.number().int().min(1).max(480),
 });
 
 const revisionSchema = z.object({
-  concept_id: z.string().uuid("Select a concept"),
+  concept_id: z.string().min(1, "Select a concept"),
   recall_grade: z.enum(["forgot", "hard", "good", "easy"]),
 });
 
 const assessmentSchema = z.object({
-  concept_id: z.string().uuid("Select a concept"),
+  concept_id: z.string().min(1, "Select a concept"),
   mcq_correct: z.enum(["true", "false"]),
   self_confidence: z.coerce.number().min(0).max(100).optional(),
 });
 
 const pyqSchema = z.object({
-  concept_id: z.string().uuid("Select a concept"),
+  concept_id: z.string().min(1, "Select a concept"),
   global_importance: z.coerce.number().min(0).max(100),
 });
 
@@ -44,17 +44,19 @@ function ConceptSelect<T extends { concept_id: string }>({
   concepts,
   register,
   error,
+  selectId,
 }: {
   concepts: ConceptOption[];
   register: UseFormRegister<T>;
   error?: string;
+  selectId: string;
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="concept_id">
+      <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor={selectId}>
         Concept
       </label>
-      <select id="concept_id" className="input" {...register("concept_id" as never)}>
+      <select id={selectId} className="input" {...register("concept_id" as never)}>
         <option value="">Select concept…</option>
         {concepts.map((c) => (
           <option key={c.id} value={c.id}>
@@ -91,7 +93,12 @@ function StudySessionForm({ concepts }: { concepts: ConceptOption[] }) {
         <p className="text-sm text-slate-600">Log focused study time on a concept.</p>
       </div>
       <form className="space-y-4" onSubmit={onSubmit}>
-        <ConceptSelect concepts={concepts} register={register} error={errors.concept_id?.message} />
+        <ConceptSelect
+          concepts={concepts}
+          register={register}
+          error={errors.concept_id?.message}
+          selectId="study-session-concept_id"
+        />
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="engaged_minutes">
             Engaged minutes
@@ -133,7 +140,12 @@ function RevisionForm({ concepts }: { concepts: ConceptOption[] }) {
         <p className="text-sm text-slate-600">Record spaced-repetition recall for a concept.</p>
       </div>
       <form className="space-y-4" onSubmit={onSubmit}>
-        <ConceptSelect concepts={concepts} register={register} error={errors.concept_id?.message} />
+        <ConceptSelect
+          concepts={concepts}
+          register={register}
+          error={errors.concept_id?.message}
+          selectId="revision-concept_id"
+        />
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="recall_grade">
             Recall grade
@@ -178,7 +190,12 @@ function AssessmentForm({ concepts }: { concepts: ConceptOption[] }) {
         <p className="text-sm text-slate-600">Submit MCQ attempt results for a concept.</p>
       </div>
       <form className="space-y-4" onSubmit={onSubmit}>
-        <ConceptSelect concepts={concepts} register={register} error={errors.concept_id?.message} />
+        <ConceptSelect
+          concepts={concepts}
+          register={register}
+          error={errors.concept_id?.message}
+          selectId="assessment-concept_id"
+        />
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="mcq_correct">
             MCQ result
@@ -223,7 +240,12 @@ function PyqForm({ concepts }: { concepts: ConceptOption[] }) {
         <p className="text-sm text-slate-600">Update global PYQ importance for a concept.</p>
       </div>
       <form className="space-y-4" onSubmit={onSubmit}>
-        <ConceptSelect concepts={concepts} register={register} error={errors.concept_id?.message} />
+        <ConceptSelect
+          concepts={concepts}
+          register={register}
+          error={errors.concept_id?.message}
+          selectId="pyq-concept_id"
+        />
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="global_importance">
             Global importance (0–100)

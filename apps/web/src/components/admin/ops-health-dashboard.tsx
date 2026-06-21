@@ -1,6 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+
+import { ErrorState } from "@/components/ui/error-state";
+import { LoadingState } from "@/components/ui/loading-state";
 import { getApiOrigin } from "@/lib/api/origin";
 
 interface OpsHealthResponse {
@@ -50,16 +53,15 @@ export function OpsHealthDashboard() {
   });
 
   if (healthQuery.isLoading) {
-    return <p className="text-sm text-slate-600">Loading platform health…</p>;
+    return <LoadingState label="Loading platform health…" />;
   }
 
   if (healthQuery.isError || !healthQuery.data) {
     return (
-      <div className="card border-red-200 bg-red-50">
-        <p className="text-sm text-red-800">
-          Unable to reach backend health endpoints. Ensure the API is running.
-        </p>
-      </div>
+      <ErrorState
+        error={healthQuery.error ?? new Error("Unable to reach backend health endpoints.")}
+        onRetry={() => void healthQuery.refetch()}
+      />
     );
   }
 

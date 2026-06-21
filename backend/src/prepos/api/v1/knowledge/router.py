@@ -10,6 +10,7 @@ from prepos.api.deps import (
     get_knowledge_admin_service,
     get_knowledge_agent_service,
     get_knowledge_search_service,
+    get_prompt_security_service,
 )
 from prepos.application.knowledge.dto import (
     CreateKnowledgeSourceRequest,
@@ -49,7 +50,14 @@ async def ask_knowledge(
     request: KnowledgeAskRequest,
     context: Annotated[TenantContext, Depends(get_current_context)],
     service: Annotated[KnowledgeAgentService, Depends(get_knowledge_agent_service)],
+    prompt_security: Annotated[object, Depends(get_prompt_security_service)],
 ) -> KnowledgeAskResponse:
+    await prompt_security.evaluate_prompt(
+        tenant_id=context.tenant_id,
+        user_id=context.user_id,
+        source="knowledge_ask",
+        prompt=request.query,
+    )
     return await service.ask(tenant_id=context.tenant_id, request=request)
 
 

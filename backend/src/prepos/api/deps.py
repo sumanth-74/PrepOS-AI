@@ -334,6 +334,7 @@ def get_knowledge_search_service(
 def get_knowledge_admin_service(
     settings: Annotated[Settings, Depends(get_settings)],
     session: Annotated[AsyncSession, Depends(get_session)],
+    knowledge_security: Annotated[object, Depends(get_knowledge_security_service)],
 ) -> KnowledgeAdminService:
     from prepos.tasks.knowledge_tasks import embed_source_chunks
 
@@ -342,6 +343,7 @@ def get_knowledge_admin_service(
         repository=SqlAlchemyKnowledgeRepository(session),
         storage=LocalKnowledgeStorage(settings),
         embed_task=embed_source_chunks,
+        knowledge_security_service=knowledge_security,
     )
     return KnowledgeAdminService(
         repository=SqlAlchemyKnowledgeRepository(session),
@@ -875,7 +877,11 @@ def get_copilot_service(
     planning_service: Annotated[AdaptivePlanningService, Depends(get_adaptive_planning_service)],
     forecasting_service: Annotated[GoalForecastingService, Depends(get_goal_forecasting_service)],
     agent_orchestrator: Annotated[object, Depends(get_agent_orchestrator)],
+    prompt_security_service: Annotated[object, Depends(get_prompt_security_service)],
+    evaluation_platform_service: Annotated[object, Depends(get_evaluation_platform_service)],
+    recommendation_validation_service: Annotated[object, Depends(get_recommendation_validation_service)],
 ) -> CopilotService:
+    from prepos.application.agents.orchestrator import AgentOrchestrator
     from prepos.application.pyq.pyq_service import PyqService
     from prepos.application.recommendations.outcomes.outcome_service import RecommendationOutcomeService
     from prepos.application.planning.planning_service import AdaptivePlanningService
@@ -935,6 +941,9 @@ def get_copilot_service(
         institution_service=institution_service,
         institution_outcome_service=institution_outcome_service,
         agent_orchestrator=agent_orchestrator,
+        prompt_security_service=prompt_security_service,
+        evaluation_platform_service=evaluation_platform_service,
+        recommendation_validation_service=recommendation_validation_service,
     )
 
 
@@ -1034,3 +1043,136 @@ async def get_current_context(
         request_id=request_id,
         correlation_id=request_id,
     )
+
+
+def get_platform_maturity_repo(
+    session: Annotated[AsyncSession, Depends(get_session)],
+):
+    from prepos.infrastructure.db.repositories.platform_maturity_repository import (
+        SqlAlchemyPlatformMaturityRepository,
+    )
+
+    return SqlAlchemyPlatformMaturityRepository(session)
+
+
+def get_prompt_security_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.security.prompt_security_service import PromptSecurityService
+
+    return PromptSecurityService(repository=repo)
+
+
+def get_knowledge_security_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.security.knowledge_security_service import KnowledgeSecurityService
+
+    return KnowledgeSecurityService(repository=repo)
+
+
+def get_tenant_audit_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.security.tenant_audit_service import TenantAuditService
+
+    return TenantAuditService(repository=repo)
+
+
+def get_job_reliability_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.job_reliability_service import JobReliabilityService
+
+    return JobReliabilityService(repository=repo)
+
+
+def get_forecast_accuracy_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.forecast_accuracy_service import ForecastAccuracyService
+
+    return ForecastAccuracyService(repository=repo)
+
+
+def get_recommendation_validation_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.recommendation_validation_service import (
+        RecommendationValidationService,
+    )
+
+    return RecommendationValidationService(repository=repo)
+
+
+def get_evaluation_platform_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.evaluation_platform_service import EvaluationPlatformService
+
+    return EvaluationPlatformService(repository=repo)
+
+
+def get_disaster_recovery_service(
+    settings: Annotated[Settings, Depends(get_settings)],
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.disaster_recovery_service import DisasterRecoveryService
+
+    return DisasterRecoveryService(repository=repo, settings=settings)
+
+
+def get_product_analytics_service(
+    session: Annotated[AsyncSession, Depends(get_session)],
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.product_analytics_service import ProductAnalyticsService
+
+    return ProductAnalyticsService(repository=repo, session=session)
+
+
+def get_monitoring_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.monitoring_service import MonitoringService
+
+    return MonitoringService(repository=repo)
+
+
+def get_outcome_measurement_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.application.platform.monitoring_service import OutcomeMeasurementService
+
+    return OutcomeMeasurementService(repository=repo)
+
+
+def get_platform_readiness_service(
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+    prompt_security: Annotated[object, Depends(get_prompt_security_service)],
+    tenant_audit: Annotated[object, Depends(get_tenant_audit_service)],
+    knowledge_security: Annotated[object, Depends(get_knowledge_security_service)],
+    forecast_accuracy: Annotated[object, Depends(get_forecast_accuracy_service)],
+    recommendation_validation: Annotated[object, Depends(get_recommendation_validation_service)],
+    disaster_recovery: Annotated[object, Depends(get_disaster_recovery_service)],
+):
+    from prepos.application.platform.platform_readiness_service import PlatformReadinessService
+
+    return PlatformReadinessService(
+        repository=repo,
+        prompt_security=prompt_security,
+        tenant_audit=tenant_audit,
+        knowledge_security=knowledge_security,
+        forecast_accuracy=forecast_accuracy,
+        recommendation_validation=recommendation_validation,
+        disaster_recovery=disaster_recovery,
+    )
+
+
+def get_event_bus(
+    settings: Annotated[Settings, Depends(get_settings)],
+    repo: Annotated[object, Depends(get_platform_maturity_repo)],
+):
+    from prepos.domain_events.redis_streams_bus import RedisStreamsEventBus
+
+    return RedisStreamsEventBus(settings=settings, repository=repo)

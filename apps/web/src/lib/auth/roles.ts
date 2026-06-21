@@ -18,10 +18,17 @@ export function hasAnyRole(roles: AppRole[], allowed: AppRole[]): boolean {
 }
 
 export function defaultPortalPath(roles: AppRole[]): string {
-  if (hasAnyRole(roles, ["faculty", "institute_admin", "super_admin"])) {
+  if (hasAnyRole(roles, ["institute_admin", "super_admin"])) {
+    return "/admin";
+  }
+  if (hasAnyRole(roles, ["faculty"])) {
     return "/mentor/dashboard";
   }
   return "/student/dashboard";
+}
+
+export function isAdminRole(roles: AppRole[]): boolean {
+  return hasAnyRole(roles, ["institute_admin", "super_admin"]);
 }
 
 export function isMentorRole(roles: AppRole[]): boolean {

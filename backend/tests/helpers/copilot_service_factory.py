@@ -28,6 +28,9 @@ def build_copilot_service_kwargs(**overrides: object) -> dict[str, object]:
         "institution_service": AsyncMock(),
         "institution_outcome_service": AsyncMock(),
         "agent_orchestrator": AsyncMock(),
+        "prompt_security_service": None,
+        "evaluation_platform_service": None,
+        "recommendation_validation_service": None,
     }
     defaults.update(overrides)
     return defaults

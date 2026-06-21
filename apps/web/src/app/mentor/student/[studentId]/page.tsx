@@ -14,7 +14,7 @@ import {
   useTwinDashboard,
 } from "@/hooks/use-student-queries";
 import { formatLabel, formatPercent, formatScore } from "@/lib/utils/format";
-import type { TwinRecommendationResponse } from "@/lib/types/api";
+import type { ConceptRecommendation } from "@/lib/types/api";
 
 export default function MentorStudentPage({
   params,
@@ -27,7 +27,7 @@ export default function MentorStudentPage({
   const examId = profileQuery.data?.target_exam ?? null;
   const dashboardQuery = useTwinDashboard(studentId);
   const twinQuery = useTwin(studentId);
-  const recommendationsQuery = useRecommendations(studentId);
+  const recommendationsQuery = useRecommendations(studentId, examId);
 
   return (
     <>
@@ -105,22 +105,21 @@ function MentorRecommendations({
   items,
 }: {
   examId: string | null;
-  items: TwinRecommendationResponse[];
+  items: ConceptRecommendation[];
 }) {
   return (
     <section className="card">
       <h2 className="text-sm font-semibold text-slate-900">Recommendations</h2>
       <ul className="mt-3 space-y-3">
         {items.slice(0, 8).map((item) => (
-          <li
-            key={`${item.concept_id}-${item.recommendation_type}`}
-            className="rounded-lg border border-slate-100 p-3"
-          >
+          <li key={item.concept_id} className="rounded-lg border border-slate-100 p-3">
             <div className="flex items-start justify-between gap-2">
               <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
-              <StatusBadge label={formatScore(item.recommendation_score)} tone="info" />
+              <StatusBadge label={formatScore(String(item.impact_score))} tone="info" />
             </div>
-            <p className="mt-1 text-sm text-slate-600">{item.explanation}</p>
+            <p className="mt-1 text-sm text-slate-600">
+              {item.reasons[0] ?? item.concept_name}
+            </p>
           </li>
         ))}
       </ul>

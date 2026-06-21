@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { AgentOrchestrationDashboard } from "@/components/admin/agent-orchestration-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminAgentsPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Agent orchestration"
           description="Monitor planner decisions, tool invocations, workflow triggers, and execution audit trails."
@@ -34,7 +32,6 @@ export default function AdminAgentsPage() {
           }
         />
         <AgentOrchestrationDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

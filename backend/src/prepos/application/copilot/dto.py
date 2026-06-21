@@ -36,6 +36,16 @@ class CopilotRecommendationResponse(BaseModel):
     reasons: list[str] = Field(default_factory=list)
     estimated_readiness_gain: float
     confidence: str
+    explanation: str | None = None
+
+
+class CopilotCardResponse(BaseModel):
+    card_type: str
+    title: str
+    summary: str
+    explanation: str | None = None
+    data: dict[str, object] = Field(default_factory=dict)
+    expanded: bool = False
 
 
 class CopilotQueryResponse(BaseModel):
@@ -44,8 +54,10 @@ class CopilotQueryResponse(BaseModel):
     sources: list[CopilotSourceResponse] = Field(default_factory=list)
     citations: list[CopilotCitationResponse] = Field(default_factory=list)
     recommendations: list[CopilotRecommendationResponse] = Field(default_factory=list)
+    cards: list[CopilotCardResponse] = Field(default_factory=list)
     confidence: str | None = None
     student_context_used: bool | None = None
     session_id: UUID | None = None
     trace_id: UUID | None = None
     execution_id: UUID | None = None
+    explanation: str | None = None

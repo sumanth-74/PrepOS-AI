@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { InterventionOptimizationDashboard } from "@/components/admin/intervention-optimization-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminInterventionsPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Intervention optimization"
           description="Mentor intervention effectiveness, ROI, success rates, and cohort analytics."
@@ -28,7 +26,6 @@ export default function AdminInterventionsPage() {
           }
         />
         <InterventionOptimizationDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

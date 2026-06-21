@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { AdaptivePlanningDashboard } from "@/components/admin/adaptive-planning-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminPlanningPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Adaptive planning"
           description="Weekly plan generation, adherence, completion, and forecast analytics."
@@ -34,7 +32,6 @@ export default function AdminPlanningPage() {
           }
         />
         <AdaptivePlanningDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

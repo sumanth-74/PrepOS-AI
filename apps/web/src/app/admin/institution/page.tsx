@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { InstitutionIntelligenceDashboard } from "@/components/admin/institution-intelligence-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminInstitutionPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Institution intelligence"
           description="Executive insights, cohort comparisons, mentor effectiveness, trends, and actionable recommendations."
@@ -31,7 +29,6 @@ export default function AdminInstitutionPage() {
           }
         />
         <InstitutionIntelligenceDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

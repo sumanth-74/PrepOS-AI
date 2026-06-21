@@ -4,11 +4,11 @@ interface StatusBadgeProps {
 }
 
 const toneClasses: Record<NonNullable<StatusBadgeProps["tone"]>, string> = {
-  neutral: "bg-slate-100 text-slate-700",
-  info: "bg-brand-100 text-brand-700",
-  success: "bg-emerald-100 text-emerald-700",
-  warning: "bg-amber-100 text-amber-800",
-  danger: "bg-red-100 text-red-700",
+  neutral: "bg-surface-raised text-foreground-muted",
+  info: "bg-growth-100 text-growth-800 dark:bg-growth-900/50 dark:text-growth-300",
+  success: "bg-growth-100 text-growth-800 dark:bg-growth-900/50 dark:text-growth-300",
+  warning: "bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300",
+  danger: "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300",
 };
 
 export function StatusBadge({ label, tone = "neutral" }: StatusBadgeProps) {

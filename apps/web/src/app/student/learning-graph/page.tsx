@@ -1,15 +1,15 @@
 "use client";
 
+import { GitBranch } from "lucide-react";
+
+import { PremiumCard } from "@/components/design-system/card";
+import { ReadinessRadar, SegmentHeatmap } from "@/components/charts/lazy-charts";
 import { ConceptLabel } from "@/components/ui/concept-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useStudentContext } from "@/hooks/use-student-context";
-import {
-  useLearningGraph,
-  useReadiness,
-  useTwinDashboard,
-} from "@/hooks/use-student-queries";
+import { useLearningGraph, useReadiness, useTwinDashboard } from "@/hooks/use-student-queries";
 import { formatLabel, formatPercent, formatScore } from "@/lib/utils/format";
 
 export default function LearningGraphPage() {
@@ -21,63 +21,95 @@ export default function LearningGraphPage() {
   return (
     <>
       <PageHeader
-        title="Learning Graph"
-        description="Concept mastery, readiness, strengths, and weaknesses."
+        eyebrow="Knowledge Map"
+        title="Where am I strong — and where am I weak?"
+        description="Concept mastery, readiness dimensions, and focus areas across your syllabus."
       />
 
       <div className="mb-6">
         <QueryBoundary
           query={readinessQuery}
           loadingLabel="Loading readiness..."
-          emptyTitle="No readiness data"
+          emptyTitle="Build your readiness profile"
+          emptyDescription="Log assessments and revisions to map your knowledge, retention, and confidence."
+          emptyIcon={GitBranch}
+          emptyAction={{ label: "Log activity", href: "/student/activities" }}
+          emptySecondaryAction={{ label: "View recommendations", href: "/student/recommendations" }}
         >
-          {(readiness) => (
-            <div className="card">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs uppercase text-slate-500">Overall readiness</p>
-                  <p className="text-3xl font-semibold text-brand-700">
-                    {formatScore(readiness.overall_score)}
-                  </p>
-                </div>
-                <StatusBadge
-                  label={`${readiness.rated_node_count}/${readiness.total_node_count} rated`}
-                />
+          {(readiness) => {
+            const radarData = [
+              { dimension: "Knowledge", value: Number(readiness.knowledge_subscore ?? 0) },
+              { dimension: "Retention", value: Number(readiness.retention_subscore ?? 0) },
+              { dimension: "Confidence", value: Number(readiness.confidence_subscore ?? 0) },
+              { dimension: "Coverage", value: Number(readiness.coverage_subscore ?? 0) },
+            ];
+            return (
+              <div className="grid gap-6 lg:grid-cols-2">
+                <PremiumCard glow>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="metric-label">Overall readiness</p>
+                      <p className="mt-1 text-metric text-growth-700 dark:text-growth-400">
+                        {formatScore(readiness.overall_score)}
+                      </p>
+                    </div>
+                    <StatusBadge label={`${readiness.rated_node_count}/${readiness.total_node_count} rated`} tone="info" />
+                  </div>
+                  <ReadinessRadar data={radarData} height={220} className="mt-4" />
+                </PremiumCard>
+                <PremiumCard>
+                  <h2 className="text-heading-sm">Subscores</h2>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    <Metric label="Knowledge" value={readiness.knowledge_subscore} />
+                    <Metric label="Retention" value={readiness.retention_subscore} />
+                    <Metric label="Confidence" value={readiness.confidence_subscore} />
+                    <Metric label="Coverage" value={readiness.coverage_subscore} />
+                  </div>
+                </PremiumCard>
               </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-4">
-                <Metric label="Knowledge" value={readiness.knowledge_subscore} />
-                <Metric label="Retention" value={readiness.retention_subscore} />
-                <Metric label="Confidence" value={readiness.confidence_subscore} />
-                <Metric label="Coverage" value={readiness.coverage_subscore} />
-              </div>
-            </div>
-          )}
+            );
+          }}
         </QueryBoundary>
       </div>
 
       <QueryBoundary
         query={graphQuery}
         loadingLabel="Loading concepts..."
-        emptyTitle="No concepts provisioned"
+        emptyTitle="Your learning graph is provisioning"
+        emptyDescription="Complete onboarding — your syllabus concepts will appear here within moments."
+        emptyAction={{ label: "Complete onboarding", href: "/student/onboarding" }}
         isEmpty={(data) => data.nodes.length === 0}
       >
         {(graph) => (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {graph.nodes.map((node) => (
-              <article key={node.concept_id} className="card space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <ConceptLabel conceptId={node.concept_id} examId={examId} showPath />
-                  <StatusBadge label={formatLabel(node.node_state)} />
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
-                  <span>Mastery: {formatScore(node.mastery_score)}</span>
-                  <span>Retention: {formatScore(node.retention_score)}</span>
-                  <span>Confidence: {formatScore(node.confidence_score)}</span>
-                  <span>Importance: {formatScore(node.importance_score)}</span>
-                </div>
-              </article>
-            ))}
-          </div>
+          <>
+            <SegmentHeatmap
+              cells={graph.nodes.slice(0, 8).map((node) => ({
+                label: node.concept_id.split(".").pop() ?? node.concept_id,
+                value: Math.round(Number(node.mastery_score ?? 0)),
+              }))}
+              className="mb-6"
+            />
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {graph.nodes.map((node) => (
+                <PremiumCard key={node.concept_id} padding="sm" className="space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <ConceptLabel conceptId={node.concept_id} examId={examId} showPath />
+                    <StatusBadge label={formatLabel(node.node_state)} />
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-surface-raised">
+                    <div
+                      className="h-full rounded-full bg-gradient-growth"
+                      style={{ width: `${Math.min(100, Number(node.mastery_score ?? 0))}%` }}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-foreground-muted">
+                    <span>Mastery: {formatScore(node.mastery_score)}</span>
+                    <span>Retention: {formatScore(node.retention_score)}</span>
+                  </div>
+                </PremiumCard>
+              ))}
+            </div>
+          </>
         )}
       </QueryBoundary>
 
@@ -85,36 +117,44 @@ export default function LearningGraphPage() {
         <QueryBoundary
           query={dashboardQuery}
           loadingLabel="Loading strengths..."
-          emptyTitle="No strength drivers"
+          emptyTitle="Strengths emerging"
+          emptyDescription="Keep studying — your top drivers will appear here."
           isEmpty={(data) => data.top_positive_drivers.length === 0}
         >
           {(dashboard) => (
-            <section className="card">
-              <h2 className="text-sm font-semibold text-slate-900">Strengths</h2>
-              <ul className="mt-3 space-y-2 text-sm text-slate-700">
+            <PremiumCard>
+              <h2 className="text-heading-sm text-growth-700">Strengths</h2>
+              <ul className="mt-3 space-y-2 text-sm text-foreground">
                 {dashboard.top_positive_drivers.map((driver) => (
-                  <li key={driver}>{formatLabel(driver)}</li>
+                  <li key={driver} className="flex items-center gap-2">
+                    <span className="text-growth-600">↑</span>
+                    {formatLabel(driver)}
+                  </li>
                 ))}
               </ul>
-            </section>
+            </PremiumCard>
           )}
         </QueryBoundary>
 
         <QueryBoundary
           query={dashboardQuery}
           loadingLabel="Loading weaknesses..."
-          emptyTitle="No weakness drivers"
+          emptyTitle="No critical weaknesses yet"
+          emptyDescription="Log more activities to identify focus areas."
           isEmpty={(data) => data.top_negative_drivers.length === 0}
         >
           {(dashboard) => (
-            <section className="card">
-              <h2 className="text-sm font-semibold text-slate-900">Weaknesses</h2>
-              <ul className="mt-3 space-y-2 text-sm text-slate-700">
+            <PremiumCard>
+              <h2 className="text-heading-sm text-amber-700">Focus areas</h2>
+              <ul className="mt-3 space-y-2 text-sm text-foreground">
                 {dashboard.top_negative_drivers.map((driver) => (
-                  <li key={driver}>{formatLabel(driver)}</li>
+                  <li key={driver} className="flex items-center gap-2">
+                    <span className="text-amber-600">!</span>
+                    {formatLabel(driver)}
+                  </li>
                 ))}
               </ul>
-            </section>
+            </PremiumCard>
           )}
         </QueryBoundary>
       </div>
@@ -124,9 +164,9 @@ export default function LearningGraphPage() {
 
 function Metric({ label, value }: { label: string; value: string | null }) {
   return (
-    <div>
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="text-sm font-medium text-slate-900">{formatPercent(value)}</p>
+    <div className="rounded-xl bg-surface-raised p-3">
+      <p className="text-xs text-foreground-muted">{label}</p>
+      <p className="text-lg font-semibold text-foreground">{formatPercent(value)}</p>
     </div>
   );
 }

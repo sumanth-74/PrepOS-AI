@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { use } from "react";
 
-import { RoleGuard } from "@/components/auth/role-guard";
 import { KnowledgeSourceDetail } from "@/components/admin/knowledge-source-detail";
 import { PageHeader } from "@/components/ui/page-header";
 
@@ -15,8 +14,7 @@ export default function AdminKnowledgeDetailPage({ params }: AdminKnowledgeDetai
   const { id } = use(params);
 
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Knowledge source"
           description="Ingestion status, chunk metrics, and indexing progress."
@@ -27,7 +25,6 @@ export default function AdminKnowledgeDetailPage({ params }: AdminKnowledgeDetai
           }
         />
         <KnowledgeSourceDetail sourceId={id} />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

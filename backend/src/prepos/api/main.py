@@ -59,6 +59,10 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    from prepos.api.middleware.rate_limit_middleware import RateLimitMiddleware
+
+    app.add_middleware(RateLimitMiddleware)
+
     @app.exception_handler(DomainError)
     async def domain_error_handler(request: Request, exc: DomainError) -> JSONResponse:
         status_code = 400
@@ -68,6 +72,8 @@ def create_app() -> FastAPI:
             status_code = 403
         elif exc.code in {"AUTHENTICATION_ERROR"}:
             status_code = 401
+        elif exc.code == "PROMPT_INJECTION_BLOCKED":
+            status_code = 403
         elif exc.code in {"CONFLICT", "OPTIMISTIC_LOCK"}:
             status_code = 409
         elif exc.code == "VALIDATION_ERROR":

@@ -1,5 +1,8 @@
 "use client";
 
+import { CalendarDays, Target } from "lucide-react";
+
+import { PremiumCard } from "@/components/design-system/card";
 import { ConceptLabel } from "@/components/ui/concept-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { QueryBoundary } from "@/components/ui/query-boundary";
@@ -37,28 +40,44 @@ export default function StudyPlanPage() {
   return (
     <>
       <PageHeader
-        title="Study Plan"
-        description="Daily and weekly plan with estimated readiness gain."
+        eyebrow="Daily Mission"
+        title="Your study plan"
+        description="Structured daily and weekly missions with estimated readiness impact."
       />
       <QueryBoundary
         query={planQuery}
         loadingLabel="Loading study plan..."
-        emptyTitle="No study plan available"
-        emptyDescription="Set a goal and complete onboarding to generate a plan."
+        emptyTitle="Let's create your first study plan"
+        emptyDescription="Set a preparation goal and complete onboarding — PrepOS will generate adaptive daily missions."
+        emptyIcon={CalendarDays}
+        emptyAction={{ label: "Set your goal", href: "/student/goals" }}
+        emptySecondaryAction={{ label: "Complete onboarding", href: "/student/onboarding" }}
       >
         {(plan) => (
           <div className="space-y-8">
-            <div className="card">
-              <p className="text-xs uppercase text-slate-500">Estimated total gain</p>
-              <p className="text-2xl font-semibold text-brand-700">
-                {formatScore(plan.total_estimated_gain)}
-              </p>
-            </div>
+            <PremiumCard glow className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="metric-label">Estimated total gain</p>
+                <p className="mt-1 text-metric text-growth-700 dark:text-growth-400">
+                  {formatScore(plan.total_estimated_gain)}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-foreground-muted">
+                <Target className="h-4 w-4 text-growth-600" />
+                Complete items to build momentum
+              </div>
+            </PremiumCard>
 
             <section>
-              <h2 className="mb-3 text-sm font-semibold text-slate-900">Daily plan</h2>
+              <h2 className="mb-3 text-heading-sm">Today&apos;s missions</h2>
               {plan.daily_plan.length === 0 ? (
-                <p className="text-sm text-slate-600">No daily items scheduled.</p>
+                <PremiumCard className="text-center text-sm text-foreground-muted">
+                  No missions scheduled today.{" "}
+                  <a href="/student/goals" className="font-semibold text-growth-600 hover:underline">
+                    Update your goal
+                  </a>{" "}
+                  to regenerate.
+                </PremiumCard>
               ) : (
                 <div className="space-y-3">
                   {plan.daily_plan.map((item) => (
@@ -68,9 +87,7 @@ export default function StudyPlanPage() {
                       examId={examId}
                       onComplete={() => handleComplete(item)}
                       onSkip={() => handleSkip(item)}
-                      busy={
-                        completeMutation.isPending || skipMutation.isPending
-                      }
+                      busy={completeMutation.isPending || skipMutation.isPending}
                     />
                   ))}
                 </div>
@@ -78,17 +95,13 @@ export default function StudyPlanPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-sm font-semibold text-slate-900">Weekly plan</h2>
+              <h2 className="mb-3 text-heading-sm">Weekly missions</h2>
               {plan.weekly_plan.length === 0 ? (
-                <p className="text-sm text-slate-600">No weekly items scheduled.</p>
+                <PremiumCard className="text-sm text-foreground-muted">Weekly missions appear after your daily rhythm is established.</PremiumCard>
               ) : (
                 <div className="grid gap-3 md:grid-cols-2">
                   {plan.weekly_plan.map((item) => (
-                    <WeeklyItemCard
-                      key={item.concept_id}
-                      item={item}
-                      examId={examId}
-                    />
+                    <WeeklyItemCard key={item.concept_id} item={item} examId={examId} />
                   ))}
                 </div>
               )}
@@ -115,30 +128,20 @@ function DailyItemCard({
 }) {
   return (
     <article className="card flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div>
+      <div className="min-w-0 flex-1">
         <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-foreground-muted">
           {formatLabel(item.activity_type)} · {item.estimated_minutes} min
         </p>
-        <p className="mt-1 text-xs text-slate-500">
-          Gain: {formatScore(item.readiness_gain)} · {item.adjustment_explanation}
+        <p className="mt-1 text-xs text-foreground-subtle">
+          Gain {formatScore(item.readiness_gain)} · {item.adjustment_explanation}
         </p>
       </div>
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="btn-primary"
-          disabled={busy}
-          onClick={onComplete}
-        >
+      <div className="flex shrink-0 gap-2">
+        <button type="button" className="btn-primary min-h-[44px] min-w-[44px]" disabled={busy} onClick={onComplete}>
           Complete
         </button>
-        <button
-          type="button"
-          className="btn-secondary"
-          disabled={busy}
-          onClick={onSkip}
-        >
+        <button type="button" className="btn-secondary min-h-[44px]" disabled={busy} onClick={onSkip}>
           Skip
         </button>
       </div>
@@ -146,22 +149,16 @@ function DailyItemCard({
   );
 }
 
-function WeeklyItemCard({
-  item,
-  examId,
-}: {
-  item: WeeklyPlanItem;
-  examId: string | null;
-}) {
+function WeeklyItemCard({ item, examId }: { item: WeeklyPlanItem; examId: string | null }) {
   return (
-    <article className="card">
+    <PremiumCard padding="sm">
       <div className="flex items-start justify-between gap-2">
         <ConceptLabel conceptId={item.concept_id} examId={examId} showPath />
         <StatusBadge label={`${item.target_sessions} sessions`} />
       </div>
-      <p className="mt-2 text-sm text-slate-600">
+      <p className="mt-2 text-sm text-foreground-muted">
         {item.estimated_minutes} min · Gain {formatScore(item.readiness_gain)}
       </p>
-    </article>
+    </PremiumCard>
   );
 }

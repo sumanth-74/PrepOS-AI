@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { mentorApi, studentApi } from "@/lib/api";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastMutationError, toastSuccess } from "@/lib/toast";
 import { useStudentContext } from "@/hooks/use-student-context";
 import { useAuthStore } from "@/stores";
 
@@ -29,7 +29,7 @@ export function useAdaptivePlanMutations() {
       toastSuccess("Weekly plan generated");
       void queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   const completeMutation = useMutation({
@@ -38,7 +38,7 @@ export function useAdaptivePlanMutations() {
       toastSuccess("Plan item completed");
       void queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   return { generateMutation, completeMutation };
@@ -65,7 +65,7 @@ export function useMentorPlanMutations(studentId: string, examId?: string) {
       toastSuccess("Student plan regenerated");
       void queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   return { regenerateMutation };

@@ -272,6 +272,57 @@ export interface TwinRecommendationResponse {
   explanation: string;
 }
 
+export type RecommendationConfidence = "high" | "medium" | "low";
+
+export interface ConceptRecommendation {
+  concept_id: string;
+  concept_name: string;
+  impact_score: number;
+  reason_codes: string[];
+  reasons: string[];
+  estimated_readiness_gain: number;
+  confidence: RecommendationConfidence;
+}
+
+export interface RecommendationsResponse {
+  recommendations: ConceptRecommendation[];
+  generated_at: string;
+}
+
+export interface RecommendationExplainResponse {
+  concept_id: string;
+  concept_name: string;
+  impact_score: number;
+  weakness_score: number;
+  pyq_frequency_score: number;
+  forecast_gain_score: number;
+  current_affairs_score: number;
+  reason_codes: string[];
+  reasons: string[];
+  estimated_readiness_gain: number;
+  confidence: RecommendationConfidence;
+  historical_effectiveness: number | null;
+  average_actual_gain: number | null;
+}
+
+export interface CompleteRecommendationResponse {
+  concept_id: string;
+  status: string;
+  readiness_gain: number | null;
+}
+
+export interface RecommendationEffectivenessResponse {
+  recommendation_acceptance_rate: number;
+  completion_rate: number;
+  average_readiness_gain: number;
+  recommendation_effectiveness: number;
+}
+
+export interface RecommendationOutcomeListResponse {
+  outcomes: Array<Record<string, unknown>>;
+  total: number;
+}
+
 export interface ConceptProgressNode {
   concept_id: string;
   exam_id: string;

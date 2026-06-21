@@ -18,6 +18,18 @@ from prepos.api.v1.admin.agentops.router import (
 )
 from prepos.api.v1.admin.agentops.health_router import benchmark_router as admin_agent_benchmarks_router
 from prepos.api.v1.admin.agentops.health_router import router as admin_agent_health_router
+from prepos.api.v1.admin.platform.router import (
+    adoption_router as admin_adoption_router,
+    disaster_recovery_router as admin_disaster_recovery_router,
+    evaluations_router as admin_evaluations_router,
+    forecast_accuracy_router as admin_forecast_accuracy_router,
+    jobs_router as admin_jobs_router,
+    monitoring_router as admin_monitoring_router,
+    outcomes_router as admin_outcomes_router,
+    platform_readiness_router as admin_platform_readiness_router,
+    recommendation_validation_router as admin_recommendation_validation_router,
+    security_router as admin_security_router,
+)
 from prepos.api.v1.admin.planning.router import router as admin_planning_router
 from prepos.api.v1.admin.memory.router import router as admin_memory_router
 from prepos.api.v1.admin.recommendation_effectiveness.router import (
@@ -36,6 +48,7 @@ from prepos.api.v1.memory.router import router as memory_router
 from prepos.api.v1.pyq.router import router as pyq_router
 from prepos.api.v1.recommendations.router import router as recommendations_router
 from prepos.api.v1.exams.router import router as exams_router
+from prepos.api.v1.faculty.router import router as faculty_router
 from prepos.api.v1.goals.router import router as goals_router
 from prepos.api.v1.knowledge.router import router as knowledge_router
 from prepos.api.v1.learning_graph.router import router as learning_graph_router
@@ -57,6 +70,7 @@ router.include_router(goals_router)
 router.include_router(mentor_router)
 router.include_router(twin_router)
 router.include_router(copilot_router)
+router.include_router(faculty_router)
 router.include_router(recommendations_router)
 router.include_router(memory_router)
 router.include_router(planning_router)
@@ -84,3 +98,13 @@ router.include_router(admin_agent_costs_router)
 router.include_router(admin_approvals_router)
 router.include_router(admin_agent_health_router)
 router.include_router(admin_agent_benchmarks_router)
+router.include_router(admin_security_router)
+router.include_router(admin_jobs_router)
+router.include_router(admin_evaluations_router)
+router.include_router(admin_forecast_accuracy_router)
+router.include_router(admin_recommendation_validation_router)
+router.include_router(admin_monitoring_router)
+router.include_router(admin_disaster_recovery_router)
+router.include_router(admin_adoption_router)
+router.include_router(admin_outcomes_router)
+router.include_router(admin_platform_readiness_router)

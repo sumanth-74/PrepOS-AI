@@ -189,8 +189,8 @@ export function CurrentAffairsOperationsDashboard() {
               <select className="input mt-1 w-full" value={examId} onChange={(e) => setExamId(e.target.value)}>
                 <option value="">Select exam</option>
                 {activeExams.map((exam) => (
-                  <option key={exam.id} value={exam.id}>
-                    {exam.name}
+                  <option key={exam.exam_id} value={exam.exam_id}>
+                    {exam.exam_name}
                   </option>
                 ))}
               </select>

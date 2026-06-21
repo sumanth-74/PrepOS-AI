@@ -47,11 +47,13 @@ class KnowledgeIngestionService:
         repository: KnowledgeRepositoryPort,
         storage: KnowledgeStoragePort,
         embed_task: object | None = None,
+        knowledge_security_service: object | None = None,
     ) -> None:
         self._settings = settings
         self._repository = repository
         self._storage = storage
         self._embed_task = embed_task
+        self._knowledge_security_service = knowledge_security_service
 
     async def ingest_upload(
         self,
@@ -106,6 +108,34 @@ class KnowledgeIngestionService:
             )
 
             text = self._extract_text(file_bytes=file_bytes, mime_type=mime_type, file_name=file_name)
+
+            if self._knowledge_security_service is not None:
+                scan_result = await self._knowledge_security_service.scan_and_persist(
+                    tenant_id=tenant_id,
+                    source_id=source_id,
+                    text=text,
+                )
+                if scan_result.recommended_status == KnowledgeSourceStatus.QUARANTINED.value:
+                    await self._repository.update_source_status(
+                        source_id,
+                        status=KnowledgeSourceStatus.QUARANTINED.value,
+                        chunk_count=0,
+                    )
+                    refreshed = await self._repository.get_source_by_id(source_id, tenant_id=tenant_id)
+                    if refreshed is None:
+                        raise NotFoundError("Knowledge source not found after security scan.")
+                    logger.warning(
+                        "knowledge_source_quarantined",
+                        source_id=str(source_id),
+                        risk_score=scan_result.risk_score,
+                    )
+                    return _to_source_response(refreshed)
+                if scan_result.recommended_status == KnowledgeSourceStatus.SECURITY_REVIEW_REQUIRED.value:
+                    await self._repository.update_source_status(
+                        source_id,
+                        status=KnowledgeSourceStatus.SECURITY_REVIEW_REQUIRED.value,
+                    )
+
             chunks = chunk_text(
                 text,
                 chunk_size_tokens=self._settings.knowledge_chunk_size_tokens,

@@ -1,15 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import type { UseQueryResult } from "@tanstack/react-query";
-import { EmptyState } from "@/components/ui/empty-state";
+
+import { EmptyState, type EmptyStateAction } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { LoadingState } from "@/components/ui/loading-state";
-
-interface EmptyAction {
-  label: string;
-  href: string;
-}
 
 interface QueryBoundaryProps<T> {
   query: UseQueryResult<T>;
@@ -17,7 +13,9 @@ interface QueryBoundaryProps<T> {
   loadingFallback?: React.ReactNode;
   emptyTitle: string;
   emptyDescription?: string;
-  emptyAction?: EmptyAction;
+  emptyIcon?: LucideIcon;
+  emptyAction?: EmptyStateAction;
+  emptySecondaryAction?: EmptyStateAction;
   isEmpty?: (data: T) => boolean;
   children: (data: T) => React.ReactNode;
 }
@@ -28,7 +26,9 @@ export function QueryBoundary<T>({
   loadingFallback,
   emptyTitle,
   emptyDescription,
+  emptyIcon,
   emptyAction,
+  emptySecondaryAction,
   isEmpty,
   children,
 }: QueryBoundaryProps<T>) {
@@ -40,37 +40,22 @@ export function QueryBoundary<T>({
     return <ErrorState error={query.error} onRetry={() => void query.refetch()} />;
   }
 
-  if (query.data === undefined || query.data === null) {
+  const showEmpty =
+    query.data === undefined ||
+    query.data === null ||
+    (query.data !== undefined && query.data !== null && isEmpty?.(query.data));
+
+  if (showEmpty) {
     return (
       <EmptyState
         title={emptyTitle}
         description={emptyDescription}
-        action={
-          emptyAction ? (
-            <Link href={emptyAction.href} className="btn-primary">
-              {emptyAction.label}
-            </Link>
-          ) : undefined
-        }
+        icon={emptyIcon}
+        primaryAction={emptyAction}
+        secondaryAction={emptySecondaryAction}
       />
     );
   }
 
-  if (isEmpty?.(query.data)) {
-    return (
-      <EmptyState
-        title={emptyTitle}
-        description={emptyDescription}
-        action={
-          emptyAction ? (
-            <Link href={emptyAction.href} className="btn-primary">
-              {emptyAction.label}
-            </Link>
-          ) : undefined
-        }
-      />
-    );
-  }
-
-  return children(query.data);
+  return children(query.data as T);
 }

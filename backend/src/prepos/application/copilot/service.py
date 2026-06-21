@@ -6,7 +6,12 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from prepos.application.copilot.analytics_service import CopilotAnalyticsService
-from prepos.application.copilot.dto import CopilotQueryRequest, CopilotQueryResponse, CopilotSourceResponse
+from prepos.application.copilot.dto import (
+    CopilotCardResponse,
+    CopilotQueryRequest,
+    CopilotQueryResponse,
+    CopilotSourceResponse,
+)
 from prepos.application.copilot.handlers import admin as admin_handlers
 from prepos.application.copilot.handlers import mentor as mentor_handlers
 from prepos.application.copilot.handlers import student as student_handlers
@@ -108,6 +113,7 @@ from prepos.application.twin.services import TwinRecommendationService
 from prepos.application.twin.twin_read_service import TwinReadService
 from prepos.core.exceptions import ValidationError
 from prepos.core.tenancy import RoleName, TenantContext
+from prepos.core.tracing import new_execution_id, new_trace_id, trace_pipeline_stage
 from prepos.domain.learning_graph.exceptions import NodeNotFoundError
 from prepos.infrastructure.db.repositories.student_repository import SqlAlchemyStudentUnitOfWork
 
@@ -139,6 +145,9 @@ class CopilotService:
         institution_service: InstitutionIntelligenceService,
         institution_outcome_service: InstitutionOutcomeService,
         agent_orchestrator: AgentOrchestrator,
+        prompt_security_service: object | None = None,
+        evaluation_platform_service: object | None = None,
+        recommendation_validation_service: object | None = None,
     ) -> None:
         self._session = session
         self._student_uow = student_uow
@@ -164,6 +173,9 @@ class CopilotService:
         self._institution_outcome_service = institution_outcome_service
         self._agent_orchestrator = agent_orchestrator
         self._mentor_knowledge_context_builder = MentorKnowledgeContextBuilder()
+        self._prompt_security_service = prompt_security_service
+        self._evaluation_platform_service = evaluation_platform_service
+        self._recommendation_validation_service = recommendation_validation_service
 
     async def query(
         self,
@@ -174,73 +186,100 @@ class CopilotService:
         started = time.perf_counter()
         self._validate_persona_access(context, request.persona)
 
-        if request.agent_mode:
-            student_id: UUID | None = None
-            student_user_id: UUID | None = None
-            if request.persona in {"student", "mentor"}:
-                student_id = await self._resolve_student_id(context, request)
-                student = await self._student_uow.student_repo.get_by_id(context.tenant_id, student_id)
-                student_user_id = student.user_id if student is not None else context.user_id
-            exam_id = request.exam_id
-            if exam_id is None and student_id is not None:
-                exam_id = await self._resolve_exam_id(context, student_id, request.exam_id)
+        trace_id = new_trace_id()
+        execution_id = new_execution_id()
 
-            agent_response = await self._agent_orchestrator.execute(
+        if self._prompt_security_service is not None:
+            with trace_pipeline_stage("prompt_security_check", attributes={"source": "copilot"}):
+                await self._prompt_security_service.evaluate_prompt(
+                    tenant_id=context.tenant_id,
+                    user_id=context.user_id,
+                    source="copilot",
+                    prompt=request.question,
+                    trace_id=trace_id,
+                )
+
+        with trace_pipeline_stage("copilot_query", attributes={"persona": request.persona}):
+            if request.agent_mode:
+                student_id: UUID | None = None
+                student_user_id: UUID | None = None
+                if request.persona in {"student", "mentor"}:
+                    student_id = await self._resolve_student_id(context, request)
+                    student = await self._student_uow.student_repo.get_by_id(context.tenant_id, student_id)
+                    student_user_id = student.user_id if student is not None else context.user_id
+                exam_id = request.exam_id
+                if exam_id is None and student_id is not None:
+                    exam_id = await self._resolve_exam_id(context, student_id, request.exam_id)
+
+                agent_response = await self._agent_orchestrator.execute(
+                    tenant_id=context.tenant_id,
+                    user_id=context.user_id,
+                    persona=request.persona,
+                    question=request.question,
+                    student_id=student_id,
+                    student_user_id=student_user_id,
+                    exam_id=exam_id,
+                )
+                response = CopilotQueryResponse(
+                    intent="agent_orchestration",
+                    answer=agent_response.answer,
+                    confidence=agent_response.confidence,
+                    sources=[
+                        CopilotSourceResponse(label=source.label, reference=source.reference)
+                        for source in agent_response.sources
+                    ],
+                    trace_id=agent_response.trace_id or trace_id,
+                    execution_id=agent_response.execution_id or execution_id,
+                )
+            else:
+                routed_intent = route_intent(persona=request.persona, question=request.question)
+
+                if routed_intent == "unknown":
+                    response = self._unknown_intent_response(request.persona)
+                elif request.persona == "admin":
+                    response = await self._handle_admin_intent(routed_intent, context=context)
+                elif request.persona == "mentor" and routed_intent in MENTOR_COHORT_INTENTS:
+                    response = await build_mentor_cohort_response(
+                        intent=routed_intent,
+                        cohort_service=self._cohort_service,
+                        tenant_id=context.tenant_id,
+                        exam_id=request.exam_id,
+                    )
+                else:
+                    student_id = await self._resolve_student_id(context, request)
+                    exam_id = await self._resolve_exam_id(context, student_id, request.exam_id)
+                    if request.persona == "student":
+                        response = await self._handle_student_intent(
+                            intent=routed_intent,
+                            question=request.question,
+                            tenant_id=context.tenant_id,
+                            student_id=student_id,
+                            exam_id=exam_id,
+                            user_id=context.user_id,
+                        )
+                    else:
+                        response = await self._handle_mentor_intent(
+                            intent=routed_intent,
+                            question=request.question,
+                            tenant_id=context.tenant_id,
+                            student_id=student_id,
+                            exam_id=exam_id,
+                            case_id=request.case_id,
+                            user_id=context.user_id,
+                        )
+
+        response = self._enrich_response(response, trace_id=trace_id, execution_id=execution_id)
+
+        if self._evaluation_platform_service is not None:
+            await self._evaluation_platform_service.capture_question(
                 tenant_id=context.tenant_id,
                 user_id=context.user_id,
                 persona=request.persona,
-                question=request.question,
-                student_id=student_id,
-                student_user_id=student_user_id,
-                exam_id=exam_id,
+                question_text=request.question,
+                intent=response.intent,
+                answer_text=response.answer,
+                trace_id=response.trace_id,
             )
-            response = CopilotQueryResponse(
-                intent="agent_orchestration",
-                answer=agent_response.answer,
-                confidence=agent_response.confidence,
-                sources=[
-                    CopilotSourceResponse(label=source.label, reference=source.reference)
-                    for source in agent_response.sources
-                ],
-                trace_id=agent_response.trace_id,
-                execution_id=agent_response.execution_id,
-            )
-        else:
-            routed_intent = route_intent(persona=request.persona, question=request.question)
-
-            if routed_intent == "unknown":
-                response = self._unknown_intent_response(request.persona)
-            elif request.persona == "admin":
-                response = await self._handle_admin_intent(routed_intent, context=context)
-            elif request.persona == "mentor" and routed_intent in MENTOR_COHORT_INTENTS:
-                response = await build_mentor_cohort_response(
-                    intent=routed_intent,
-                    cohort_service=self._cohort_service,
-                    tenant_id=context.tenant_id,
-                    exam_id=request.exam_id,
-                )
-            else:
-                student_id = await self._resolve_student_id(context, request)
-                exam_id = await self._resolve_exam_id(context, student_id, request.exam_id)
-                if request.persona == "student":
-                    response = await self._handle_student_intent(
-                        intent=routed_intent,
-                        question=request.question,
-                        tenant_id=context.tenant_id,
-                        student_id=student_id,
-                        exam_id=exam_id,
-                        user_id=context.user_id,
-                    )
-                else:
-                    response = await self._handle_mentor_intent(
-                        intent=routed_intent,
-                        question=request.question,
-                        tenant_id=context.tenant_id,
-                        student_id=student_id,
-                        exam_id=exam_id,
-                        case_id=request.case_id,
-                        user_id=context.user_id,
-                    )
 
         elapsed_ms = max(0, int((time.perf_counter() - started) * 1000))
         recorded = await self._analytics_service.record_query(
@@ -254,6 +293,102 @@ class CopilotService:
             confidence=response.confidence,
         )
         response.session_id = recorded.session_id
+        return response
+
+    def _enrich_response(
+        self,
+        response: CopilotQueryResponse,
+        *,
+        trace_id,
+        execution_id,
+    ) -> CopilotQueryResponse:
+        if response.trace_id is None:
+            response.trace_id = trace_id
+        if response.execution_id is None:
+            response.execution_id = execution_id
+
+        cards: list[CopilotCardResponse] = []
+        intent = response.intent
+
+        if response.recommendations:
+            for rec in response.recommendations:
+                if rec.explanation is None and rec.reasons:
+                    rec.explanation = "; ".join(rec.reasons)
+                cards.append(
+                    CopilotCardResponse(
+                        card_type="recommendation",
+                        title=rec.concept_name,
+                        summary=f"Impact {rec.impact_score:.1f}/10 · Gain +{rec.estimated_readiness_gain:.1f}",
+                        explanation=rec.explanation or "Based on readiness gaps and PYQ weightage.",
+                        data={"concept_id": rec.concept_id, "confidence": rec.confidence},
+                    )
+                )
+        elif "recommendation" in intent:
+            cards.append(
+                CopilotCardResponse(
+                    card_type="recommendation",
+                    title="Recommendations",
+                    summary=response.answer[:200],
+                    explanation="Ranked by estimated readiness impact using your learning graph.",
+                )
+            )
+        elif "forecast" in intent:
+            cards.append(
+                CopilotCardResponse(
+                    card_type="forecast",
+                    title="Goal Forecast",
+                    summary=response.answer[:200],
+                    explanation="Projected from historical readiness trajectory and study velocity.",
+                )
+            )
+            response.explanation = "Forecast computed from twin readiness model and goal timeline."
+        elif "plan" in intent or "planning" in intent:
+            cards.append(
+                CopilotCardResponse(
+                    card_type="plan",
+                    title="Study Plan",
+                    summary=response.answer[:200],
+                    explanation="Scheduled based on weak concepts, revision queue, and available hours.",
+                )
+            )
+        elif "intervention" in intent:
+            cards.append(
+                CopilotCardResponse(
+                    card_type="intervention",
+                    title="Intervention",
+                    summary=response.answer[:200],
+                    explanation="Recommended when readiness risk exceeds cohort baseline.",
+                )
+            )
+        elif "pyq" in intent:
+            cards.append(
+                CopilotCardResponse(
+                    card_type="pyq",
+                    title="PYQ Intelligence",
+                    summary=response.answer[:200],
+                    explanation="Patterns derived from historical UPSC question mapping.",
+                )
+            )
+        elif "current_affair" in intent or "ca_" in intent:
+            cards.append(
+                CopilotCardResponse(
+                    card_type="current_affairs",
+                    title="Current Affairs",
+                    summary=response.answer[:200],
+                    explanation="Grounded in indexed CA sources with recency weighting.",
+                )
+            )
+        elif "memory" in intent or "timeline" in intent:
+            cards.append(
+                CopilotCardResponse(
+                    card_type="memory",
+                    title="Learning Memory",
+                    summary=response.answer[:200],
+                    explanation="Synthesized from coaching memory events.",
+                )
+            )
+
+        response.cards = cards
         return response
 
     def _validate_persona_access(self, context: TenantContext, persona: str) -> None:

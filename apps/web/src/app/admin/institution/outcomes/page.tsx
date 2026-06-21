@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { InstitutionOutcomeDashboard } from "@/components/admin/institution-outcome-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminInstitutionOutcomesPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Institution outcomes & ROI"
           description="Measure initiative effectiveness, readiness uplift, forecast gains, and institutional ROI."
@@ -25,7 +23,6 @@ export default function AdminInstitutionOutcomesPage() {
           }
         />
         <InstitutionOutcomeDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

@@ -8,7 +8,7 @@ export function LoadingSkeleton({ rows = 3, className = "" }: LoadingSkeletonPro
     <div className={`animate-pulse space-y-3 ${className}`} role="status" aria-live="polite">
       <span className="sr-only">Loading...</span>
       {Array.from({ length: rows }).map((_, index) => (
-        <div key={index} className="rounded-lg bg-slate-200/80 h-12 w-full" />
+        <div key={index} className="skeleton h-12 w-full" />
       ))}
     </div>
   );
@@ -24,8 +24,8 @@ export function KpiSkeletonGrid({ count = 4 }: { count?: number }) {
       <span className="sr-only">Loading...</span>
       {Array.from({ length: count }).map((_, index) => (
         <div key={index} className="card animate-pulse space-y-3">
-          <div className="h-3 w-24 rounded bg-slate-200" />
-          <div className="h-8 w-16 rounded bg-slate-200" />
+          <div className="skeleton h-3 w-24" />
+          <div className="skeleton h-8 w-16" />
         </div>
       ))}
     </div>

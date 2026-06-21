@@ -2,6 +2,7 @@
 
 import { RoleGuard } from "@/components/auth/role-guard";
 import { MentorShell } from "@/components/layout/mentor-nav";
+import { WorkerStatusBanner } from "@/components/ui/worker-status-banner";
 
 export default function MentorLayout({
   children,
@@ -10,7 +11,10 @@ export default function MentorLayout({
 }) {
   return (
     <RoleGuard allowed={["faculty", "institute_admin", "super_admin"]}>
-      <MentorShell>{children}</MentorShell>
+      <MentorShell>
+        <WorkerStatusBanner />
+        {children}
+      </MentorShell>
     </RoleGuard>
   );
 }

@@ -43,7 +43,9 @@ function resolvePersona(pathname: string, roles: AppRole[]): CopilotPersona | nu
 }
 
 function resolveContext(pathname: string): { studentId: string | null; caseId: string | null } {
-  const studentMatch = pathname.match(/\/mentor\/student\/([^/]+)/);
+  const studentMatch =
+    pathname.match(/\/mentor\/student\/([^/]+)/) ??
+    pathname.match(/\/mentor\/students\/([^/]+)/);
   const caseMatch = pathname.match(/\/mentor\/cases\/([^/]+)/);
   return {
     studentId: studentMatch?.[1] ?? null,
@@ -118,8 +120,10 @@ export function useCopilot() {
             sources: response.sources,
             citations: response.citations,
             recommendations: response.recommendations,
+            cards: response.cards,
             confidence: response.confidence,
             studentContextUsed: response.student_context_used,
+            explanation: response.explanation,
           },
         ]);
       } catch (err) {

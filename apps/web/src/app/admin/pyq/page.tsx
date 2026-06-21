@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { PyqOperationsDashboard } from "@/components/admin/pyq-operations-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminPyqPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="PYQ intelligence"
           description="Upload previous year questions, review concept mappings, and monitor PYQ retrieval analytics."
@@ -25,7 +23,6 @@ export default function AdminPyqPage() {
           }
         />
         <PyqOperationsDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

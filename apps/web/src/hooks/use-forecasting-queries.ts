@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { mentorApi, studentApi } from "@/lib/api";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastMutationError, toastSuccess } from "@/lib/toast";
 import { useStudentContext } from "@/hooks/use-student-context";
 import { useAuthStore } from "@/stores";
 
@@ -40,7 +40,7 @@ export function useForecastMutations() {
       void queryClient.invalidateQueries({ queryKey: forecastKey });
       void queryClient.invalidateQueries({ queryKey: historyKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   const customScenarioMutation = useMutation({
@@ -50,7 +50,7 @@ export function useForecastMutations() {
       toastSuccess("Custom scenario simulated");
       void queryClient.invalidateQueries({ queryKey: forecastKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   return { generateMutation, customScenarioMutation };
@@ -77,7 +77,7 @@ export function useMentorForecastMutations(studentId: string, examId?: string) {
       toastSuccess("Student forecast regenerated");
       void queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error) => toastError(error),
+    onError: (error) => toastMutationError(error),
   });
 
   return { simulateMutation };

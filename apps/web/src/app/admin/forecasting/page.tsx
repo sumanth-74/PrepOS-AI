@@ -3,13 +3,11 @@
 import Link from "next/link";
 
 import { GoalForecastingDashboard } from "@/components/admin/goal-forecasting-dashboard";
-import { RoleGuard } from "@/components/auth/role-guard";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminForecastingPage() {
   return (
-    <RoleGuard allowed={["institute_admin", "super_admin"]}>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <>
         <PageHeader
           title="Goal forecasting"
           description="Forecast quality, scenario usage, goal attainment, and cohort projections."
@@ -28,7 +26,6 @@ export default function AdminForecastingPage() {
           }
         />
         <GoalForecastingDashboard />
-      </div>
-    </RoleGuard>
+    </>
   );
 }

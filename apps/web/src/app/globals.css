@@ -2,30 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
+@layer base {
+  :root {
+    color-scheme: light;
+    --surface: 0 0% 100%;
+    --surface-raised: 210 20% 98%;
+    --surface-overlay: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --foreground-muted: 215 16% 47%;
+    --foreground-subtle: 215 14% 62%;
+    --border: 214 20% 90%;
+    --border-subtle: 214 20% 94%;
+    --hero-from: 142 76% 36%;
+    --hero-to: 142 71% 45%;
+    --ring: 142 71% 45%;
+    --motion-duration-fast: 150ms;
+    --motion-duration-base: 250ms;
+    --motion-duration-slow: 400ms;
+    --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --surface: 222 47% 7%;
+    --surface-raised: 222 40% 10%;
+    --surface-overlay: 222 40% 12%;
+    --foreground: 210 40% 98%;
+    --foreground-muted: 215 16% 65%;
+    --foreground-subtle: 215 14% 50%;
+    --border: 217 25% 18%;
+    --border-subtle: 217 25% 14%;
+    --hero-from: 142 60% 28%;
+    --hero-to: 142 55% 38%;
+    --ring: 142 71% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-surface text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    @apply bg-growth-200 text-growth-900;
+  }
+
+  .dark ::selection {
+    @apply bg-growth-800 text-growth-100;
+  }
 }
 
-body {
-  @apply bg-slate-50 text-slate-900 antialiased;
-}
+@layer components {
+  .card {
+    @apply rounded-2xl border border-border bg-surface p-5 shadow-soft transition-shadow duration-300 hover:shadow-card;
+  }
 
-.card {
-  @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm;
-}
+  .card-elevated {
+    @apply rounded-2xl border border-border bg-surface p-5 shadow-card;
+  }
 
-.btn-primary {
-  @apply inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60;
-}
+  .card-glass {
+    @apply rounded-2xl border border-border/60 bg-surface/80 p-5 shadow-soft backdrop-blur-xl;
+  }
 
-.btn-secondary {
-  @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60;
-}
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-growth px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition-all duration-300 hover:shadow-glow hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-growth-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
 
-.input {
-  @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 focus:ring-2;
-}
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-growth-300 hover:bg-growth-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-growth-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-growth-950/40;
+  }
 
-.label {
-  @apply mb-1 block text-sm font-medium text-slate-700;
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-foreground-muted transition-colors hover:bg-surface-raised hover:text-foreground;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground outline-none transition-all placeholder:text-foreground-subtle focus:border-growth-400 focus:ring-2 focus:ring-growth-500/20;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-foreground;
+  }
+
+  .metric-value {
+    @apply text-metric font-bold tracking-tight text-foreground;
+  }
+
+  .metric-label {
+    @apply text-caption uppercase tracking-wider text-foreground-muted;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-growth bg-clip-text text-transparent;
+  }
+
+  .nav-active {
+    @apply bg-growth-50 text-growth-800 shadow-soft dark:bg-growth-950/50 dark:text-growth-300;
+  }
+
+  .skeleton {
+    @apply animate-shimmer rounded-lg bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 bg-[length:200%_100%] dark:from-slate-800 dark:via-slate-700 dark:to-slate-800;
+  }
 }
